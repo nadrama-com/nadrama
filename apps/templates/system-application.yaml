@@ -16,7 +16,8 @@ spec:
       releaseName: "system-{{ .name }}"
       skipCrds: {{ if .name | hasSuffix "-crds" }}false{{ else }}true{{ end }}
       valuesObject:
-        nadrama: {{ $.Values.nadrama }}
+        nadrama:
+{{ toYaml $.Values.nadrama | nindent 10 }}
         argo-cd:
           global:
             domain: {{ index $.Values "argo-cd" "global" "domain" }}
