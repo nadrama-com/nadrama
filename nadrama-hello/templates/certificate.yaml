@@ -1,0 +1,17 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nadrama-hello-certificate
+spec:
+  secretName: nadrama-hello-certificate-secret
+  dnsNames:
+    - nadrama-hello-service
+    - nadrama-hello-service.default
+    - nadrama-hello-service.default.svc
+    - nadrama-hello-service.default.svc.cluster.local
+  issuerRef:
+    kind: ClusterIssuer
+    name: selfsigned-clusterissuer

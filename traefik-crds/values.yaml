@@ -1,0 +1,30 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+# https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md#values
+# https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+traefik:
+  deployment:
+    enabled: false
+  ingressClass:
+    enabled: false
+  gateway:
+    enabled: false
+  gatewayClass:
+    enabled: false
+  providers:
+    kubernetesCRD:
+      enabled: false
+    kubernetesIngress:
+      enabled: false
+  tls:
+    enabled: false
+  service:
+    enabled: false
+  rbac:
+    enabled: false
+  crds:
+    enabled: true
+  serviceAccount:
+    # setting a value prevents the creation of a new service account
+    name: "default"

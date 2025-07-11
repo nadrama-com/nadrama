@@ -1,0 +1,20 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-default-certificate
+spec:
+  secretName: traefik-default-certificate-secret
+  dnsNames:
+    - {{ .Values.nadrama.ingress.hostname }}
+    - "*.{{ .Values.nadrama.ingress.hostname }}"
+  issuerRef:
+    {{ if .Values.nadrama.ingress.letsencrypt }}
+    kind: Issuer
+    name: env-cool-issuer
+    {{ else }}
+    kind: ClusterIssuer
+    name: selfsigned-clusterissuer
+    {{ end }}

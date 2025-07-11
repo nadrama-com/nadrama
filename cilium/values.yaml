@@ -1,0 +1,28 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+# https://docs.cilium.io/en/stable/helm-reference/
+# https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
+cilium:
+  operator:
+    skipCRDCreation: true
+    replicas: 1
+    extraArgs:
+      - "--leader-election-lease-duration=75s"
+      - "--leader-election-renew-deadline=65s"
+      - "--leader-election-retry-period=15s"
+  envoy:
+    enabled: false
+  hubble:
+    enabled: false
+  k8sServiceHost: "127.0.0.1"
+  k8sServicePort: 6443
+  kubeProxyReplacement: true
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: true
+  ipam:
+    mode: "kubernetes"
+  routingMode: "tunnel"
+  tunnelProtocol: "vxlan"

@@ -1,0 +1,40 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: deny-namespace-vap
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["*"]
+        resources: ["*"]
+  validations:
+    - expression: >
+        !(request.userInfo.groups.exists(g,
+          g.matches('^nadrama:.*') &&
+          (
+            request.namespace == "" ||
+            request.namespace.startsWith('kube-') ||
+            request.namespace.startsWith('system-')
+          )
+        ))
+      message: "Access to system-/kube- prefixed namespaces and cluster-wide resources is restricted to system:masters only. See https://nadrama.com/docs/limits"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: deny-namespace-vapb
+spec:
+  policyName: deny-namespace-vap
+  validationActions: ["Deny", "Audit"]
+  matchResources:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["*"]
+        resources: ["*"]

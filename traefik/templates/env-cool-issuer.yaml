@@ -1,0 +1,22 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+{{ if (hasSuffix ".env.cool" .Values.nadrama.ingress.hostname) }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: env-cool-issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: letsencrypt@nadrama.cool
+    privateKeySecretRef:
+      name: letsencrypt-account-key
+    solvers:
+      - dns01:
+          acmeDNS:
+            accountSecretRef:
+              name: env-cool-acmedns-secret
+              key: acmedns.json
+            host: https://nadrama.cool/acmedns/env.cool
+{{ end }}

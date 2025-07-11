@@ -1,0 +1,37 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+# Machine template defines pool machine settings like node type
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NadramaMachineTemplate
+metadata:
+  name: system-pool
+  namespace: system-cluster-api
+spec:
+  template:
+    spec:
+      nodeType: t3.small
+---
+# Machine deployment defines pool settings like number of replicas
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: system-pool
+  namespace: system-cluster-api
+spec:
+  clusterName: test-cluster
+  replicas: 1
+  template:
+    spec:
+      clusterName: test-cluster
+      selector:
+        matchLabels:
+          cluster.x-k8s.io/cluster-name: test-cluster
+      bootstrap:
+        # we only set this because Cluster API requires something
+        # but this is just an empty secret
+        dataSecretName: nadrama-machine-default
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: NadramaMachineTemplate
+        name: system-pool

@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    cluster.x-k8s.io/provider: cluster-api
+    control-plane: controller-manager
+  name: capi-controller-manager
+  namespace: system-cluster-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/provider: cluster-api
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        cluster.x-k8s.io/provider: cluster-api
+        control-plane: controller-manager
+    spec:
+      containers:
+        - args:
+            - --leader-elect
+            - --diagnostics-address=:8443
+            - --insecure-diagnostics=false
+            - --use-deprecated-infra-machine-naming=false
+            - --feature-gates=MachinePool=true,ClusterResourceSet=true,ClusterTopology=false,RuntimeSDK=false,MachineSetPreflightChecks=true,MachineWaitForVolumeDetachConsiderVolumeAttachments=true
+            - --leader-elect-lease-duration=75s
+            - --leader-elect-renew-deadline=65s
+            - --leader-elect-retry-period=15s
+          command:
+            - /manager
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+          image: registry.k8s.io/cluster-api/cluster-api-controller:v1.9.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+          name: manager
+          ports:
+            - containerPort: 9443
+              name: webhook-server
+              protocol: TCP
+            - containerPort: 9440
+              name: healthz
+              protocol: TCP
+            - containerPort: 8443
+              name: metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: healthz
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 65532
+            runAsUser: 65532
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cert
+              readOnly: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: capi-manager
+      terminationGracePeriodSeconds: 10
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      volumes:
+        - name: cert
+          secret:
+            secretName: capi-webhook-service-cert

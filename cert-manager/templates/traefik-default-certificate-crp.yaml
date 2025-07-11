@@ -1,0 +1,41 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+# CertificateRequestPolicy for Traefik ingress on cluster subdomain
+# Can be either the ClusterIssuer for self-signed certificates,
+# or the Nadrama env-cool Issuer (in traefik chart) for LetsEncrypt certificates.
+apiVersion: policy.cert-manager.io/v1alpha1
+kind: CertificateRequestPolicy
+metadata:
+  name: traefik-default-certificate-crp
+spec:
+  selector:
+    issuerRef: {}
+    namespace:
+      matchNames:
+        - "system-traefik"
+  allowed:
+    # Deny commonName - must not be present
+    # Only allow specific service DNS name patterns
+    dnsNames:
+      required: true
+      validations:
+        - rule: self == '{{ .Values.nadrama.ingress.hostname }}' || self == '*.{{ .Values.nadrama.ingress.hostname }}'
+          message: "DNS names must be {{ .Values.nadrama.ingress.hostname }} or *.{{ .Values.nadrama.ingress.hostname }}"
+    # Restrict to server auth only
+    usages:
+      - "digital signature"
+      - "key encipherment"
+      - "server auth"
+    # Prevent CA certificates
+    isCA: false
+    # Allow basic subject fields but not required
+    subject:
+      organizations: { values: ["*"] }
+      countries: { values: ["*"] }
+      organizationalUnits: { values: ["*"] }
+      localities: { values: ["*"] }
+      provinces: { values: ["*"] }
+      streetAddresses: { values: ["*"] }
+      postalCodes: { values: ["*"] }
+      serialNumber: { value: "*" }

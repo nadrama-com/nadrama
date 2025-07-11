@@ -1,0 +1,39 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: deny-privileged-vap
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  validations:
+    - expression: >
+        request.userInfo.groups.exists(g, g == 'system:masters') ||
+        request.userInfo.username == 'system:serviceaccount:system-argocd:system-argocd-system-project-sa' ||
+        !object.spec.containers.exists(c,
+          has(c.securityContext) &&
+          has(c.securityContext.privileged) &&
+          c.securityContext.privileged == true
+        )
+      message: "Privileged containers are not allowed. See https://nadrama.com/docs/limits"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: deny-privileged-vapb
+spec:
+  policyName: deny-privileged-vap
+  validationActions: ["Deny", "Audit"]
+  matchResources:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]

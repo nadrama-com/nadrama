@@ -1,0 +1,66 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nadrama-hello-caddy-configmap
+data:
+  Caddyfile: |
+    {
+      auto_https off
+    }
+    :443 {
+      tls /etc/caddy/certs/tls.crt /etc/caddy/certs/tls.key
+      reverse_proxy 127.0.0.1:80
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nadrama-hello-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nadrama-hello
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nadrama-hello
+    spec:
+      containers:
+        - name: nadrama-hello-container
+          image: nadrama/hello-world:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+        - name: nadrama-hello-caddy
+          image: caddy
+          ports:
+            - containerPort: 443
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "400m"
+              memory: "256Mi"
+          volumeMounts:
+            - name: nadrama-hello-caddy-tls-volume
+              mountPath: /etc/caddy/certs
+            - name: nadrama-hello-caddy-config-volume
+              mountPath: /etc/caddy
+      volumes:
+        - name: nadrama-hello-caddy-tls-volume
+          secret:
+            secretName: nadrama-hello-certificate-secret
+        - name: nadrama-hello-caddy-config-volume
+          configMap:
+            name: nadrama-hello-caddy-configmap
