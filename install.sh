@@ -18,18 +18,7 @@ fi
 for CHART in "${INSTALL_CHARTS[@]}"; do
     echo "Installing ${CHART}..."
     source "${CURRENT}/vars.sh"
-    if [[ "${CHART}" == "argocd" ]]; then
-        ${CURRENT}/argocd/redis-password.sh
-        # Create ConfigMap with values.yaml content for ArgoCD to use
-        CONFIGMAP_EXISTS=$(kubectl get configmap nadrama-values -n system-argocd -o name 2>/dev/null || echo "")
-        if [[ -z "${CONFIGMAP_EXISTS}" ]]; then
-            echo "Creating nadrama-values ConfigMap..."
-            kubectl create configmap nadrama-values --from-file=values.yaml="${CURRENT}/values.yaml" -n system-argocd
-        else
-            echo "Updating nadrama-values ConfigMap..."
-            kubectl create configmap nadrama-values --from-file=values.yaml="${CURRENT}/values.yaml" -n system-argocd --dry-run=client -o yaml | kubectl apply -f -
-        fi
-    elif [[ "${CHART}" == "traefik" ]]; then
+    if [[ "${CHART}" == "traefik" ]]; then
         ${CURRENT}/traefik/env-cool-acmedns-secret.sh ${NADRAMA_CHARTS_INGRESS_HOSTNAME}
     elif [[ "${CHART}" == "trust-manager" ]]; then
         CERT_MGR_GET=$(kubectl get deployment -n system-cert-manager system-cert-manager-webhook -o json 2> /dev/null || echo '{"status": {"conditions": [{"type": "Available", "status": "False"}]}}')

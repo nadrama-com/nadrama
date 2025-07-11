@@ -15,8 +15,11 @@ spec:
     helm:
       releaseName: "system-{{ .name }}"
       skipCrds: {{ if .name | hasSuffix "-crds" }}false{{ else }}true{{ end }}
-      valueFiles:
-        - "/app/config/values.yaml"
+      valuesObject:
+        nadrama: {{ $.Values.nadrama }}
+        argo-cd:
+          global:
+            domain: {{ index $.Values "argo-cd" "global" "domain" }}
   syncPolicy:
     automated:
       prune: true

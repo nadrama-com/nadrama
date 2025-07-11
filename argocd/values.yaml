@@ -56,15 +56,6 @@ argo-cd:
       issuer:
         kind: ClusterIssuer
         name: selfsigned-clusterissuer
-  repoServer:
-    volumes:
-      - name: nadrama-values
-        configMap:
-          name: nadrama-values
-    volumeMounts:
-      - name: nadrama-values
-        mountPath: /app/config/values.yaml
-        subPath: values.yaml
   application-set:
     certificate:
       enabled: true
