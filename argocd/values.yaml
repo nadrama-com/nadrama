@@ -26,6 +26,8 @@ argo-cd:
     params:
       application.namespaces: "system-apps"
     cm:
+      # note: in production, create is disabled as not to overwrite customisations
+      create: true
       application.resourceTrackingMethod: annotation
       # # note: both 'admin.enabled' and 'oidc.config' are set in production.
       # # however, these are commented out here so you can use argocd-local users.
