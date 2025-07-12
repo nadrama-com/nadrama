@@ -20,6 +20,8 @@ for CHART in "${INSTALL_CHARTS[@]}"; do
     source "${CURRENT}/vars.sh"
     if [[ "${CHART}" == "traefik" ]]; then
         ${CURRENT}/traefik/env-cool-acmedns-secret.sh ${NADRAMA_CHARTS_INGRESS_HOSTNAME}
+    elif [[ "${CHART}" == "argocd" ]]; then
+        ${CURRENT}/argocd/redis-password.sh
     elif [[ "${CHART}" == "trust-manager" ]]; then
         CERT_MGR_GET=$(kubectl get deployment -n system-cert-manager system-cert-manager-webhook -o json 2> /dev/null || echo '{"status": {"conditions": [{"type": "Available", "status": "False"}]}}')
         CERT_MGR_STATUS="False"
