@@ -17,10 +17,13 @@ spec:
       skipCrds: {{ if .name | hasSuffix "-crds" }}false{{ else }}true{{ end }}
       valuesObject:
         nadrama:
-{{ toYaml $.Values.nadrama | nindent 10 }}
+{{- toYaml $.Values.nadrama | nindent 10 }}
         argo-cd:
           global:
             domain: {{ index $.Values "argo-cd" "global" "domain" }}
+          configs:
+            cm:
+              create: {{ index $.Values "argo-cd" "configs" "cm" "create" }}
   syncPolicy:
     automated:
       prune: true
