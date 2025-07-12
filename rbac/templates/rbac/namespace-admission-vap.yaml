@@ -9,20 +9,21 @@ spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-      - apiGroups: ["*"]
+      - operations: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+        apiGroups: ["*"]
         apiVersions: ["*"]
-        operations: ["*"]
-        resources: ["*"]
+        resources: ["*/*"]
   validations:
+    # do not apply this policy if...
     - expression: >
-        !(request.userInfo.groups.exists(g,
-          g.matches('^nadrama:.*') &&
+        !(
+          request.userInfo.groups.exists(g, g.startsWith("nadrama:")) &&
           (
             request.namespace == "" ||
             request.namespace.startsWith('kube-') ||
             request.namespace.startsWith('system-')
           )
-        ))
+        )
       message: "Access to system-/kube- prefixed namespaces and cluster-wide resources is restricted to system:masters only. See https://nadrama.com/docs/limits"
 ---
 apiVersion: admissionregistration.k8s.io/v1
@@ -33,8 +34,4 @@ spec:
   policyName: deny-namespace-vap
   validationActions: ["Deny", "Audit"]
   matchResources:
-    resourceRules:
-      - apiGroups: ["*"]
-        apiVersions: ["*"]
-        operations: ["*"]
-        resources: ["*"]
+    namespaceSelector: {}

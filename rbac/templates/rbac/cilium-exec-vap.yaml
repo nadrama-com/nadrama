@@ -14,6 +14,7 @@ spec:
         apiVersions: ["v1"]
         resources: ["pods/exec"]
   validations:
+    # do not apply this policy if...
     - expression: >
         request.namespace != "system-cilium"
       message: "Exec into Cilium pods is not permitted for security reasons"
@@ -24,6 +25,6 @@ metadata:
   name: prevent-cilium-exec-vapb
 spec:
   policyName: deny-cilium-exec-vap
-  validationActions: ["Deny"]
+  validationActions: ["Deny", "Audit"]
   matchResources:
     namespaceSelector: {}
