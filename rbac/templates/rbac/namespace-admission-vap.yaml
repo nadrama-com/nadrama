@@ -24,7 +24,7 @@ spec:
             request.namespace.startsWith('system-')
           )
         )
-      message: "Access to system-/kube- prefixed namespaces and cluster-wide resources is restricted to system:masters only. See https://nadrama.com/docs/limits"
+      message: "Access to system-/kube- prefixed namespaces and cluster-wide resources is not permitted. See https://nadrama.com/docs/limits"
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
