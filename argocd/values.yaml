@@ -28,14 +28,14 @@ argo-cd:
     cm:
       application.resourceTrackingMethod: annotation
       # note: both 'admin.enabled' and 'oidc.config' are set in production.
-      # when these are commented out, local admin users can be used.
+      # however, these are commented out here so you can use argocd-local users.
       admin.enabled: false
       oidc.config: |
         name: Nadrama
-        issuer: https://ryan.nadrama.dev
+        issuer: https://console.nadrama.com
         enablePKCEAuthentication: true
-        clientId: acc06awcb4f5hzmfey7qwt7s8a6q4
-        clientSecret: TODO-random-value
+        clientId: acc0000000001r010000000000000
+        clientSecret: random-value
         requestedScopes:
           - openid
           - profile
