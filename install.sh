@@ -18,30 +18,8 @@ fi
 for CHART in "${INSTALL_CHARTS[@]}"; do
     echo "Installing ${CHART}..."
     source "${CURRENT}/vars.sh"
-    if [[ "${CHART}" == "traefik" ]]; then
-        ${CURRENT}/traefik/env-cool-acmedns-secret.sh ${NADRAMA_CHARTS_INGRESS_HOSTNAME}
-    elif [[ "${CHART}" == "argocd" ]]; then
-        ${CURRENT}/argocd/redis-password.sh
-    elif [[ "${CHART}" == "trust-manager" ]]; then
-        CERT_MGR_GET=$(kubectl get deployment -n system-cert-manager system-cert-manager-webhook -o json 2> /dev/null || echo '{"status": {"conditions": [{"type": "Available", "status": "False"}]}}')
-        CERT_MGR_STATUS="False"
-        if [ -n "${CERT_MGR_GET}" ]; then
-            CERT_MGR_STATUS=$(echo "${CERT_MGR_GET}" | jq '.status.conditions// [] | .[] | select(.type=="Available").status' -r)
-        fi
-        if [[ "$CERT_MGR_STATUS" != "True" ]]; then
-            echo "Error: system-cert-manager-webhook pod is not running/available. Please RETRY '${0} ${1}' once it has started. Exiting..."
-            exit 1
-        fi
-    elif [[ "${CHART}" == "trust-bundles" ]]; then
-        TRUST_MGR_GET=$(kubectl get deployment -n system-trust-manager system-trust-manager -o json 2> /dev/null || echo '{"status": {"conditions": [{"type": "Available", "status": "False"}]}}')
-        TRUST_MGR_STATUS="False"
-        if [ -n "${TRUST_MGR_GET}" ]; then
-            TRUST_MGR_STATUS=$(echo "${TRUST_MGR_GET}" | jq '.status.conditions// [] | .[] | select(.type=="Available").status' -r)
-        fi
-        if [[ "$TRUST_MGR_STATUS" != "True" ]]; then
-            echo "Error: system-trust-manager pod is not running/available. Please RETRY '${0} ${1}' once it has started. Exiting..."
-            exit 1
-        fi
+    if [ -f "${CURRENT}/${CHART}/pre-install.sh" ]; then
+        "${CURRENT}/${CHART}/pre-install.sh"
     fi
     CMD="helm upgrade --install
         ${RELEASE_NAME}

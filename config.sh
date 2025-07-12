@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 set -eo pipefail
 
+CURRENT=$(dirname "$(readlink -f "$0")")
+
 # static config (note: chart order is critical)
 
 SYSTEM_CORE_CRD_CHARTS=(
@@ -54,6 +56,7 @@ deps=(
     openssl
     base64
     head
+    grep
 )
 for dep in "${deps[@]}"; do
     if ! command -v "$dep" &>/dev/null; then
@@ -72,3 +75,7 @@ if [[ -n "${1}" ]]; then
     fi
     INSTALL_CHARTS=("${1}")
 fi
+
+# get ingress hostname from values file using grep
+INGRESS_HOSTNAME=$(grep "hostname\: " "${CURRENT}/values.yaml")
+INGRESS_HOSTNAME=${INGRESS_HOSTNAME#*: }

@@ -9,12 +9,13 @@ SECRET_NS="system-traefik"
 # Exit early if secret already exists
 kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0
 
-# Check args
-if [ -z "$1" ]; then
-  echo "Usage: $0 <ingress-hostname>"
+# Check ingress hostname was loaded from values file
+if [ -z "$INGRESS_HOSTNAME" ]; then
+  echo "INGRESS_HOSTNAME is not loaded from values.yaml. Please run setup.sh"
   exit 1
 fi
-INGRESS_HOSTNAME="${1}"
+
+# Generate random password
 RANDOM_PASSWORD=$(openssl rand -base64 200 | tr -dc 'a-zA-Z0-9_-' | head -c 100)
 
 # eg.env.cool:
