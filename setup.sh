@@ -29,9 +29,6 @@ nadrama:
 argo-cd:
   global:
     domain: argocd.${INGRESS_HOSTNAME}${INGRESS_PORT}
-  configs:
-    cm:
-      create: true
 EOF
 
 echo "Setup complete."
