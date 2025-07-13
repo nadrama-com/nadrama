@@ -32,4 +32,5 @@ for CHART in "${INSTALL_CHARTS[@]}"; do
     echo "${CMD}"
     ${CMD}
     echo "${CHART} installed."
+    echo ""
 done

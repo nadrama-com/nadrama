@@ -21,9 +21,6 @@ spec:
         argo-cd:
           global:
             domain: {{ index $.Values "argo-cd" "global" "domain" }}
-          configs:
-            cm:
-              create: {{ index $.Values "argo-cd" "configs" "cm" "create" }}
   syncPolicy:
     automated:
       prune: true
