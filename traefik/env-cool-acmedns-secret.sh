@@ -40,7 +40,7 @@ EOF
 
 # Generate password and create secret
 ENCODED_JSON_CONTENT=$(echo "${JSON_CONTENT}" | jq . | base64)
-kubectl apply -f - <<EOF
+kubectl apply -n "${SECRET_NS}" -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:

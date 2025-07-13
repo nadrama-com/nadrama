@@ -6,21 +6,11 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
-  admin.enabled: "false"
+  admin.enabled: "true"
   application.instanceLabelKey: argocd.argoproj.io/instance
   application.resourceTrackingMethod: annotation
   application.sync.impersonation.enabled: "false"
   exec.enabled: "false"
-  oidc.config: |
-    name: Nadrama
-    issuer: https://console.nadrama.com
-    enablePKCEAuthentication: true
-    clientId: acc0000000001r010000000000000
-    clientSecret: random-value
-    requestedScopes:
-      - openid
-      - profile
-      - email
   resource.customizations.ignoreResourceUpdates.ConfigMap: |
     jqPathExpressions:
       # Ignore the cluster-autoscaler status

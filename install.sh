@@ -19,7 +19,7 @@ for CHART in "${INSTALL_CHARTS[@]}"; do
     echo "Installing ${CHART}..."
     source "${CURRENT}/vars.sh"
     if [ -f "${CURRENT}/${CHART}/pre-install.sh" ]; then
-        "${CURRENT}/${CHART}/pre-install.sh"
+        source "${CURRENT}/${CHART}/pre-install.sh"
     fi
     CMD="helm upgrade --install
         ${RELEASE_NAME}

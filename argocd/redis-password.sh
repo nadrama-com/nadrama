@@ -12,7 +12,7 @@ kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0
 # Generate password and create secret
 PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
 ENCODED_PASSWORD=$(echo -n "${PASSWORD}" | base64)
-kubectl apply -f - <<EOF
+kubectl apply -n "${SECRET_NS}" -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:

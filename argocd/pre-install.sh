@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: Apache-2.0
 set -eo pipefail
 
-CURRENT=$(dirname "$(readlink -f "$0")")
-${CURRENT}/redis-password.sh
+source argocd/cm-configmap.sh
+source argocd/redis-password.sh
