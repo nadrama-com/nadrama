@@ -18,6 +18,7 @@ fi
 
 INGRESS_PORT=""
 if [[ "${INGRESS_HOSTNAME}" = "local.env.cool" ]]; then
+    # Nadrama dev-specific override
     INGRESS_PORT=":4433"
 fi
 

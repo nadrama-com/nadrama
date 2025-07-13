@@ -3,4 +3,5 @@
 # SPDX-License-Identifier: Apache-2.0
 set -eo pipefail
 
-source traefik/env-cool-acmedns-secret.sh
+CURRENT=$(dirname "$(readlink -f "$0")")
+${CURRENT}/env-cool-acmedns-secret.sh

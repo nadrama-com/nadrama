@@ -78,4 +78,8 @@ fi
 
 # get ingress hostname from values file using grep
 INGRESS_HOSTNAME=$(grep "hostname\: " "${CURRENT}/values.yaml")
-INGRESS_HOSTNAME=${INGRESS_HOSTNAME#*: }
+export INGRESS_HOSTNAME=${INGRESS_HOSTNAME#*: }
+
+# get argocd domain from values file using grep
+ARGOCD_DOMAIN=$(grep "domain\: " "${CURRENT}/values.yaml")
+export ARGOCD_DOMAIN=${ARGOCD_DOMAIN#*: }

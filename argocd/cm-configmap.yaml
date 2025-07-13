@@ -110,5 +110,5 @@ data:
   statusbadge.enabled: "false"
   timeout.hard.reconciliation: 0s
   timeout.reconciliation: 180s
-  url: https://argocd.local.env.cool:4433
+  url: https://argocd.local.env.cool
   users.anonymous.enabled: "false"
