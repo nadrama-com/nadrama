@@ -20,8 +20,10 @@ spec:
           request.userInfo.groups.exists(g, g.startsWith("nadrama:")) &&
           (
             request.namespace == "" ||
-            request.namespace.startsWith('kube-') ||
-            request.namespace.startsWith('system-')
+            (
+              (request.namespace.startsWith('kube-') || request.namespace.startsWith('system-')) &&
+              !(request.kind.kind == "Pod" && request.operation == "DELETE" && request.userInfo.groups.exists(g, g == "nadrama:admins"))
+            )
           )
         )
       message: "Access to system-/kube- prefixed namespaces and cluster-wide resources is not permitted. See https://nadrama.com/docs/limits"
