@@ -9,8 +9,6 @@ spec:
   parentRefs:
     - name: traefik-gateway
       namespace: system-traefik
-  hostnames:
-    - "{{ .Values.nadrama.ingress.hostname }}"
   rules:
     - matches:
         - path:
