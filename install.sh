@@ -15,11 +15,20 @@ if [[ "${CLUSTER_NS_EXISTS}" != "namespace/system-cluster" ]]; then
     kubectl create namespace system-cluster
 fi
 
+# ensure any hooks are restored to fail closed, even on error
+trap 'patch_hooks Fail cert-manager && patch_hooks Fail trust-manager && echo "Cleanup complete"' EXIT
+
+# install charts
 for CHART in "${INSTALL_CHARTS[@]}"; do
     echo "Installing ${CHART}..."
     source "${CURRENT}/vars.sh"
     if [ -f "${CURRENT}/${CHART}/pre-install.sh" ]; then
         "${CURRENT}/${CHART}/pre-install.sh"
+    fi
+    if [[ "$CHART" == "argocd" ]] || [[ "$CHART" == "trust-manager" ]]; then
+        patch_hooks Ignore cert-manager
+    elif [[ "$CHART" == "trust-bundles" ]] then
+        patch_hooks Ignore trust-manager
     fi
     CMD="helm upgrade --install
         ${RELEASE_NAME}

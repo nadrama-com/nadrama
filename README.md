@@ -52,6 +52,17 @@ Uninstall all (or single-chart of) Core and Default charts from the current kube
 ./uninstall.sh (<single-chart>)
 ```
 
+## Installation options for Validating & Mutating Webhooks
+
+There are runtime dependencies for some charts, for example:
+
+* `trust-manager` requires the `cert-manager` `system-cert-manager-webhook` pod to be running
+* `trust-bundles` requires the `trust-manager` `system-trust-manager` pod to be running
+
+In both examples above, it's due to the ValidatingWebhookConfiguration and MutatingWebhookConfigurations created in the `cert-manager` and `trust-manager` charts, which are configured with a failurePolicy of `Fail` (fail closed).
+
+When running `./install.sh` you can specify the env var `FORCE_NO_HOOKS=true`, which will temporarily set the failurePolicy of those webhooks to `Ignore` (fail open). This should permit all charts to install correctly, in a single run. While the `./install.sh` script will attempt to restore the failurePolicy to `Ignore` once complete, there is a risk that this does not happen properly, which is why we have not made this the default behaviour.
+
 ## Cluster Design & Assumptions
 
 * We assume Kuberentes is configured with dual-stack IPv4 + IPv6.
