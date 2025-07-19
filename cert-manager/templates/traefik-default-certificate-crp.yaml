@@ -10,7 +10,9 @@ metadata:
   name: traefik-default-certificate-crp
 spec:
   selector:
-    issuerRef: {}
+    issuerRef:
+      kind: ClusterIssuer
+      name: selfsigned-clusterissuer
     namespace:
       matchNames:
         - "system-traefik"
