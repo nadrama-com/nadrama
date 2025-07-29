@@ -11,8 +11,13 @@ metadata:
 spec:
   selector:
     issuerRef:
+      {{ if .Values.nadrama.ingress.letsencrypt }}
+      kind: Issuer
+      name: env-cool-issuer
+      {{ else }}
       kind: ClusterIssuer
       name: selfsigned-clusterissuer
+      {{ end }}
     namespace:
       matchNames:
         - "system-traefik"
