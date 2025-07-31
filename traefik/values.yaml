@@ -32,6 +32,12 @@ traefik:
       maxSurge: 0
   service:
     type: NodePort
+    spec:
+      clusterIP: "198.18.0.2"
+      clusterIPs:
+        - "198.18.0.2"
+        - "fdc6::2"
+    ipFamilyPolicy: "PreferDualStack"
   providers:
     kubernetesIngress:
       enabled: false
