@@ -19,6 +19,7 @@ cert-manager:
       retryPeriod: 15s
   cainjector:
     enabled: true # required for kube-apiserver to trust webhooks certs
+  dns01RecursiveNameservers: "1.1.1.1:53,8.8.8.8:53"
   startupapicheck:
     enabled: false
   # use approver-policy instead of built-in auto-approver
