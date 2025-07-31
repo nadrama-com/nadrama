@@ -15,9 +15,6 @@ trust-manager:
         cpu: 100m
         memory: 128Mi
   app:
-    leaderElection:
-      leaseDuration: 75s
-      renewDeadline: 65s
     trust:
       # https://cert-manager.io/docs/trust/trust-manager/
       # note: configmap and secret sources can only come from the 'Trust Namespace'

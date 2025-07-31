@@ -11,12 +11,6 @@
 cert-manager:
   crds:
     enabled: false
-  global:
-    leaderElection:
-      namespace: "system-cert-manager"
-      leaseDuration: 75s
-      renewDeadline: 65s
-      retryPeriod: 15s
   cainjector:
     enabled: true # required for kube-apiserver to trust webhooks certs
   startupapicheck:
