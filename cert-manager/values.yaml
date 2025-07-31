@@ -11,6 +11,9 @@
 cert-manager:
   crds:
     enabled: false
+  global:
+    leaderElection:
+      namespace: "system-cert-manager"
   cainjector:
     enabled: true # required for kube-apiserver to trust webhooks certs
   startupapicheck:
