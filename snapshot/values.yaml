@@ -1,0 +1,3 @@
+snapshot-controller:
+  controller:
+    fullnameOverride: system-snapshot-controller

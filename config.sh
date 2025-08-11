@@ -24,6 +24,7 @@ SYSTEM_CORE_APP_CHARTS=(
     cilium
     coredns
     argocd
+    snapshot
     cert-manager
     trust-manager
     traefik
