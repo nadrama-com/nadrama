@@ -9,5 +9,7 @@ metadata:
     meta.helm.sh/release-name: system-aws-ebs-csi
     meta.helm.sh/release-namespace: system-cluster
     helm.sh/resource-policy: keep
+    iam.amazonaws.com/allowed-roles: |
+      ["arn:aws:iam::AWS_ACCOUNT_ID:role/nadrama-CLUSTER_SLUG-ebs-csi"]
   labels:
     app.kubernetes.io/managed-by: Helm

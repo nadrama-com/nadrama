@@ -7,3 +7,16 @@ aws-ebs-csi-driver:
     enableWindows: false
   controller:
     replicaCount: 1
+    podAnnotations:
+      iam.amazonaws.com/role: arn:aws:iam::AWS_ACCOUNT_ID:role/nadrama-CLUSTER_SLUG-ebs-csi
+  defaultStorageClass:
+    enabled: false
+  storageClasses:
+  - name: aws-ebs-default
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    volumeBindingMode: WaitForFirstConsumer
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true
+    parameters:
+      encrypted: "true"
