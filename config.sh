@@ -8,6 +8,7 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # static config (note: chart order is critical)
 
 SYSTEM_CORE_CRD_CHARTS=(
+    snapshot-crds
     cilium-crds
     cert-manager-crds
     trust-manager-crds
