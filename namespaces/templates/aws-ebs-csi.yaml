@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: system-snapshot
+  name: system-aws-ebs-csi
   annotations:
-    meta.helm.sh/release-name: system-snapshot
+    meta.helm.sh/release-name: system-aws-ebs-csi
     meta.helm.sh/release-namespace: system-cluster
     helm.sh/resource-policy: keep
   labels:
