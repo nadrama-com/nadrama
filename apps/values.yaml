@@ -6,6 +6,8 @@ apps:
     # CRDs
     - name: cilium-crds
       namespace: system-cluster
+    - name: snapshot-crds
+      namespace: system-cluster
     - name: cert-manager-crds
       namespace: system-cluster
     - name: trust-manager-crds
@@ -27,6 +29,8 @@ apps:
       namespace: system-cilium
     - name: coredns
       namespace: system-coredns
+    - name: snapshot
+      namespace: system-snapshot
     - name: argocd
       namespace: system-argocd
     - name: cert-manager

@@ -8,8 +8,8 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # static config (note: chart order is critical)
 
 SYSTEM_CORE_CRD_CHARTS=(
-    snapshot-crds
     cilium-crds
+    snapshot-crds
     cert-manager-crds
     trust-manager-crds
     gateway-api-crds
@@ -23,8 +23,8 @@ SYSTEM_CORE_APP_CHARTS=(
     rbac
     cilium
     coredns
-    argocd
     snapshot
+    argocd
     cert-manager
     trust-manager
     traefik
