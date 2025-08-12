@@ -4,7 +4,7 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: deny-privileged-vap
+  name: system-deny-privileged-vap
 spec:
   failurePolicy: Fail
   matchConstraints:
@@ -28,9 +28,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: deny-privileged-vapb
+  name: system-deny-privileged-vapb
 spec:
-  policyName: deny-privileged-vap
+  policyName: system-deny-privileged-vap
   validationActions: ["Deny", "Audit"]
   matchResources:
     resourceRules:
