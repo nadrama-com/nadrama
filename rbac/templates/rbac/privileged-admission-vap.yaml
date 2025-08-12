@@ -16,7 +16,8 @@ spec:
   validations:
     - expression: >
         request.userInfo.groups.exists(g, g == 'system:masters') ||
-        request.userInfo.username == 'system:serviceaccount:system-argocd:system-argocd-system-project-sa' ||
+        object.metadata.namespace.startsWith('kube-') ||
+        object.metadata.namespace.startsWith('system-') ||
         !object.spec.containers.exists(c,
           has(c.securityContext) &&
           has(c.securityContext.privileged) &&
