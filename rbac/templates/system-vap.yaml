@@ -1,0 +1,47 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: system-deny-system-vap
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - operations: ["CREATE", "UPDATE", "DELETE", "CONNECT"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*/*"]
+  validations:
+    - expression: >
+        !(
+          has(request.userInfo.groups) &&
+          request.userInfo.groups.exists(g, g.startsWith("nadrama:")) &&
+          (
+            (
+              !has(request.namespace) && (
+                object.metadata.name.startsWith("kube-") ||
+                object.metadata.name.startsWith("system-")
+              )
+            ) ||
+            (
+              has(request.namespace) && (
+                request.namespace.startsWith("kube-") || request.namespace.startsWith("system-")
+              ) && !(
+                request.userInfo.groups.exists(g, g == "nadrama:admins") && object.kind == "Pod" && request.operation == "DELETE"
+              )
+            )
+          )
+        )
+      message: "Access to system-/kube- prefixed resources and namespaces is restricted. See https://nadrama.com/docs/limits"
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: system-deny-system-vapb
+spec:
+  policyName: system-deny-system-vap
+  validationActions: ["Deny", "Audit"]
+  matchResources:
+    namespaceSelector: {}

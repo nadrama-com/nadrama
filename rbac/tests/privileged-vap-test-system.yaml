@@ -1,0 +1,25 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: privileged-vap-test-system-user
+policies:
+  - ../templates/privileged-vap.yaml
+resources:
+  - ./resources/privileged-vap-resources.yaml
+userinfo: ./users/system-user.yaml
+results:
+  - policy: system-deny-privileged-vap
+    isValidatingAdmissionPolicy: true
+    resources:
+      - standard-pod
+    kind: Pod
+    result: pass
+  - policy: system-deny-privileged-vap
+    isValidatingAdmissionPolicy: true
+    resources:
+      - privileged-pod
+    kind: Pod
+    result: fail

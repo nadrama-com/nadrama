@@ -1,0 +1,12 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: UserInfo
+metadata:
+  name: admin-user
+clusterRoles:
+  - cluster-admin
+userInfo:
+  username: example-admin@example.com
+  uid: "1001"
+  groups:
+  - nadrama:admins
+  - system:authenticated

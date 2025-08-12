@@ -14,9 +14,8 @@ spec:
         apiVersions: ["v1"]
         resources: ["pods/exec"]
   validations:
-    # do not apply this policy if...
     - expression: >
-        request.namespace != "system-cilium"
+        !(request.namespace == "system-cilium")
       message: "Exec into Cilium pods is not permitted for security reasons"
 ---
 apiVersion: admissionregistration.k8s.io/v1
