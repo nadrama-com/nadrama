@@ -29,7 +29,7 @@ spec:
               has(request.namespace) && (
                 request.namespace.startsWith("kube-") || request.namespace.startsWith("system-")
               ) && !(
-                request.userInfo.groups.exists(g, g == "nadrama:admins") && object.kind == "Pod" && request.operation == "DELETE"
+                request.userInfo.groups.exists(g, g == "nadrama:admins") && request.operation == "DELETE" && oldObject != null && oldObject.kind == "Pod"
               )
             )
           )
