@@ -30,6 +30,10 @@ nadrama:
 argo-cd:
   global:
     domain: argocd.${INGRESS_HOSTNAME}${INGRESS_PORT}
+aws-ebs-csi-driver:
+  controller:
+    podAnnotations:
+      iam.amazonaws.com/role: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/nadrama-YOUR_CLUSTER_SLUG-ebs-csi
 EOF
 
 echo "Setup complete."

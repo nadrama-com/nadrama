@@ -7,8 +7,6 @@ aws-ebs-csi-driver:
     enableWindows: false
   controller:
     replicaCount: 1
-    podAnnotations:
-      iam.amazonaws.com/role: arn:aws:iam::*:role/nadrama-*-ebs-csi
   defaultStorageClass:
     enabled: false
   storageClasses:
