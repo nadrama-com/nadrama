@@ -14,6 +14,10 @@ if ! command -v kyverno &> /dev/null; then
     echo "you must install the fork at https://github.com/nadrama-com/kyverno/tree/fix-13829"
     exit 1
 fi
+# note there are two more bugs to fix to ensure these tests pass correctly:
+# https://github.com/kyverno/kyverno/blob/main/pkg/admissionpolicy/validate.go#L139
+# 1. `resource.GetNamespace()` should be `namespaceName`
+# 2. `admission.Create` should a property on the test table e.g. system-vap should be admission.Delete
 
 # Run table-driven tests for VAP policies using Kyverno CLI
 echo "Running tests via kyverno CLI..."
