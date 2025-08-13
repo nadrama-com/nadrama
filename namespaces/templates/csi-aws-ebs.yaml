@@ -4,12 +4,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: system-aws-ebs-csi
+  name: system-csi-aws-ebs
   annotations:
-    meta.helm.sh/release-name: system-aws-ebs-csi
+    meta.helm.sh/release-name: system-csi-aws-ebs
     meta.helm.sh/release-namespace: system-cluster
     helm.sh/resource-policy: keep
     iam.amazonaws.com/allowed-roles: |
-      ["arn:aws:iam::AWS_ACCOUNT_ID:role/nadrama-CLUSTER_SLUG-ebs-csi"]
+      ["arn:aws:iam::*:role/nadrama-*-ebs-csi"]
   labels:
     app.kubernetes.io/managed-by: Helm

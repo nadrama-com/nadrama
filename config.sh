@@ -24,7 +24,7 @@ SYSTEM_CORE_APP_CHARTS=(
     cilium
     coredns
     snapshot
-    aws-ebs-csi
+    csi-aws-ebs
     argocd
     cert-manager
     trust-manager

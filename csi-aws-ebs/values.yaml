@@ -8,7 +8,7 @@ aws-ebs-csi-driver:
   controller:
     replicaCount: 1
     podAnnotations:
-      iam.amazonaws.com/role: arn:aws:iam::AWS_ACCOUNT_ID:role/nadrama-CLUSTER_SLUG-ebs-csi
+      iam.amazonaws.com/role: arn:aws:iam::*:role/nadrama-*-ebs-csi
   defaultStorageClass:
     enabled: false
   storageClasses:

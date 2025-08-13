@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 apiVersion: v2
-name: aws-ebs-csi
+name: csi-aws-ebs
 description: AWS EBS CSI driver chart
 type: application
 version: "1.0.0"
