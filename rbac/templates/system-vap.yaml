@@ -20,13 +20,13 @@ spec:
           request.userInfo.groups.exists(g, g.startsWith("nadrama:")) &&
           (
             (
-              !has(request.namespace) && (
+              (!has(request.namespace) || request.namespace == "") && (
                 object.metadata.name.startsWith("kube-") ||
                 object.metadata.name.startsWith("system-")
               )
             ) ||
             (
-              has(request.namespace) && (
+              has(request.namespace) && request.namespace != "" && (
                 request.namespace.startsWith("kube-") || request.namespace.startsWith("system-")
               ) && !(
                 request.userInfo.groups.exists(g, g == "nadrama:admins") && request.operation == "DELETE" && oldObject != null && oldObject.kind == "Pod"

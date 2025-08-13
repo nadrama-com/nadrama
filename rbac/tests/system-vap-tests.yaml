@@ -1,0 +1,42 @@
+# Copyright 2025 Nadrama Pty Ltd
+# SPDX-License-Identifier: Apache-2.0
+policy:
+  file: ../templates/system-vap.yaml
+  name: system-deny-system-vap
+tests:
+  - request: namespace-create-system-prefix
+    user: system
+    expect: Pass
+  - request: namespace-create-system-prefix
+    user: admin
+    expect: Fail
+  - request: namespace-create-system-prefix
+    user: editor
+    expect: Fail
+  - request: namespace-create-user-prefix
+    user: system
+    expect: Pass
+  - request: namespace-create-user-prefix
+    user: admin
+    expect: Pass
+  - request: namespace-create-user-prefix
+    user: editor
+    expect: Pass
+  - request: pod-create-system-namespace
+    user: system
+    expect: Pass
+  - request: pod-create-system-namespace
+    user: admin
+    expect: Fail
+  - request: pod-create-system-namespace
+    user: editor
+    expect: Fail
+  - request: pod-create-user-namespace
+    user: system
+    expect: Pass
+  - request: pod-create-user-namespace
+    user: admin
+    expect: Pass
+  - request: pod-create-user-namespace
+    user: editor
+    expect: Pass

@@ -1,12 +1,9 @@
 # Copyright 2025 Nadrama Pty Ltd
 # SPDX-License-Identifier: Apache-2.0
----
-apiVersion: cli.kyverno.io/v1alpha1
+apiVersion: authentication.k8s.io/v1
 kind: UserInfo
-metadata:
-  name: editor-user
-userInfo:
-  username: example-editor
+spec:
+  username: editor
   groups:
   - nadrama:editors
   - system:authenticated
