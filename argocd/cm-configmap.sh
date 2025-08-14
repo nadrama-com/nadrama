@@ -11,9 +11,12 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # Exit early if configmap already exists
 #kubectl get configmap -n "${CM_NS}" "${CM_NAME}" &>/dev/null && exit 0
 
-# Check argocd domain was loaded from values file
-if [ -z "${ARGOCD_DOMAIN}" ]; then
-  echo "ARGOCD_DOMAIN is not loaded from values.yaml. Please run setup.sh"
+# Extract hostname from values file
+ARGOCD_DOMAIN=$(yq eval '.nadrama.argocd.hostname' "${CURRENT}/../_values/argocd.yaml")
+
+# Check argocd domain was extracted
+if [ -z "${ARGOCD_DOMAIN}" ] || [ "${ARGOCD_DOMAIN}" = "null" ]; then
+  echo "Failed to extract hostname from _values/argocd.yaml"
   exit 1
 fi
 

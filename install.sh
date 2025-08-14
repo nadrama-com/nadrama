@@ -4,42 +4,51 @@
 set -eo pipefail
 
 CURRENT=$(dirname "$(readlink -f "$0")")
-source "${CURRENT}/config.sh"
 
-kubectl patch service kubernetes -n default --type='merge' -p='{"spec":{"ipFamilyPolicy":"PreferDualStack","ipFamilies":["IPv4","IPv6"],"clusterIPs":["198.18.0.1","fdc6::1"]}}'
-kubectl label namespace default app.kubernetes.io/managed-by=Helm --overwrite
-kubectl annotate namespace default meta.helm.sh/release-name=system-namespaces meta.helm.sh/release-namespace=system-cluster --overwrite
-CLUSTER_NS_EXISTS=$(kubectl get namespace system-cluster -o name || echo "Error")
-if [[ "${CLUSTER_NS_EXISTS}" != "namespace/system-cluster" ]]; then
-    echo "Creating system-cluster namespace..."
-    kubectl create namespace system-cluster
+# Check dependencies
+deps=(
+    kubectl
+    helm
+    helmfile
+    jq
+    yq
+)
+for dep in "${deps[@]}"; do
+    if ! command -v "$dep" &>/dev/null; then
+        echo "Error: $dep command not found. Please install '$dep' first. Exiting..."
+        exit 1
+    fi
+done
+
+# Check setup was run
+if [ ! -d "${CURRENT}/_values" ]; then
+    echo "Error: _values directory not found. Please run setup.sh first. Exiting..."
+    exit 1
 fi
 
-# ensure any hooks are restored to fail closed, even on error
-trap 'patch_hooks Fail cert-manager && patch_hooks Fail trust-manager && echo "Cleanup complete"' EXIT
+# Ensure webhooks are restored on script error/cancellation
+patch_webhooks() {
+    local policy="$1"
+    if [[ "$policy" != "Ignore" ]] && [[ "$policy" != "Fail" ]]; then
+        echo "Invalid patch_webhooks policy param: $policy. Must be 'Ignore' or 'Fail'."
+        exit 1
+    fi
+    echo "Setting webhooks to ${policy}..."
+    # Restore cert-manager webhooks
+    kubectl patch mutatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    kubectl patch validatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    kubectl patch validatingwebhookconfiguration/system-cert-manager-approver-policy --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    # Restore trust-manager webhooks
+    kubectl patch validatingwebhookconfiguration/system-trust-manager --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    echo "Webhooks set to ${policy} successfully."
+}
+trap 'patch_webhooks Fail' EXIT
 
-# install charts
-for CHART in "${INSTALL_CHARTS[@]}"; do
-    echo "Installing ${CHART}..."
-    source "${CURRENT}/vars.sh"
-    if [ -f "${CURRENT}/${CHART}/pre-install.sh" ]; then
-        "${CURRENT}/${CHART}/pre-install.sh"
-    fi
-    if [[ "$CHART" == "argocd" ]] || [[ "$CHART" == "trust-manager" ]]; then
-        patch_hooks Ignore cert-manager
-    elif [[ "$CHART" == "trust-bundles" ]] then
-        patch_hooks Ignore trust-manager
-    fi
-    CMD="helm upgrade --install
-        ${RELEASE_NAME}
-        ./${CHART}
-        --dependency-update
-        --no-hooks
-        --namespace ${NS_NAME}
-        -f ${CURRENT}/values.yaml
-        ${CRD_FLAG}"
-    echo "${CMD}"
-    ${CMD}
-    echo "${CHART} installed."
-    echo ""
-done
+# Install specific chart if provided
+if [[ -n "${1}" ]]; then
+    echo "Installing specific chart: ${1}"
+    helmfile --args "--skip-crds" -l "chart=${1}" sync
+else
+    echo "Installing all charts with helmfile..."
+    helmfile --args "--skip-crds" sync
+fi

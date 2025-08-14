@@ -5,7 +5,7 @@
 - **Install all charts**: `./install.sh` (installs all charts to Kubernetes current context)
 - **Uninstall all charts**: `./uninstall.sh` (removes all charts from Kubernetes current context)
 - **Single chart operations**: `./render.sh <chart-name>`, `./install.sh <chart-name>`, `./uninstall.sh <chart-name>`
-- **Dependencies**: Requires `helm`, `gcsplit` (from coreutils), `jq`, `yq`
+- **Dependencies**: Requires `helm`, `helmfile`, `gcsplit` (from coreutils), `jq`, `yq`
 
 Note: agents must NEVER run `./setup.sh`.
 

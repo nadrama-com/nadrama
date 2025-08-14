@@ -16,7 +16,7 @@ spec:
         - "system-cert-manager"
   allowed:
     commonName:
-      value: "{{ .Values.nadrama.ingress.hostname }}"
+      value: '{{ index .Values.nadrama "cert-manager" "clusterCA" "commonName" }}'
       required: true
     isCA: true
     usages:

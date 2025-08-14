@@ -4,35 +4,50 @@
 set -eo pipefail
 
 CURRENT=$(dirname "$(readlink -f "$0")")
-source "${CURRENT}/config.sh"
+
+# Check dependencies
+deps=(
+    kubectl
+    helm
+    helmfile
+    jq
+    yq
+    gcsplit
+)
+for dep in "${deps[@]}"; do
+    if ! command -v "$dep" &>/dev/null; then
+        echo "Error: $dep command not found. Please install '$dep' first. Exiting..."
+        exit 1
+    fi
+done
+
+# Check setup was run
+if [ ! -d "${CURRENT}/_values" ]; then
+    echo "Error: _values directory not found. Please run setup.sh first. Exiting..."
+    exit 1
+fi
 
 RENDERED_DIR="${CURRENT}/_rendered"
 
+# Clean up previous rendered files
 rm -rf "${RENDERED_DIR}"
 
-# render via `helm template`
-for CHART in "${INSTALL_CHARTS[@]}"; do
-    echo "Generating manifests for ${CHART}..."
-    source "${CURRENT}/vars.sh"
-    CMD="helm template
-        ${RELEASE_NAME}
-        ./${CHART}
-        --dependency-update
-        --no-hooks
-        --namespace ${NS_NAME}
-        -f ${CURRENT}/values.yaml
-        ${CRD_FLAG}
-        --output-dir=${RENDERED_DIR}"
-    echo "${CMD}"
-    ${CMD}
-    echo "${CHART} manifests generated."
-done
+# Export environment variables for hooks
+export HELMFILE_OFFLINE="true"
 
-# split any multi-document YAML files into individual files
-# `brew install coreutils` for `gcsplit` on macos
-command -v jq >/dev/null 2>&1 || { echo >&2 "jq is required but not installed."; exit 1; }
-command -v yq >/dev/null 2>&1 || { echo >&2 "yq is required but not installed."; exit 1; }
-command -v gcsplit >/dev/null 2>&1 || { echo >&2 "gcsplit (from coreutils) is required but not installed."; exit 1; }
+# Set up offline mode flags for rendering (always skip hooks and cluster ops)
+HELMFILE_FLAGS="--skip-deps --skip-tests --skip-needs --no-hooks"
+
+# Render specific chart if provided
+if [[ -n "${1}" ]]; then
+    echo "Rendering specific chart: ${1}"
+    helmfile -l "chart=${1}" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+else
+    echo "Rendering all charts with helmfile..."
+    helmfile template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+fi
+exit 0
+# Split any multi-document YAML files into individual files
 echo "Splitting multi-document files..."
 find "${RENDERED_DIR}" -type f \( -name "*.yml" -o -name "*.yaml" \) | while read -r manifest_path; do
     # Get relative path and chart name

@@ -10,25 +10,15 @@ metadata:
   name: traefik-default-certificate-crp
 spec:
   selector:
-    issuerRef:
-      {{ if .Values.nadrama.ingress.letsencrypt }}
-      kind: Issuer
-      name: env-cool-issuer
-      {{ else }}
-      kind: ClusterIssuer
-      name: selfsigned-clusterissuer
-      {{ end }}
-    namespace:
-      matchNames:
-        - "system-traefik"
+{{ index .Values.nadrama "cert-manager" "defaultCertificate" "selector" | toYaml | indent 6 }}
   allowed:
     # Deny commonName - must not be present
     # Only allow specific service DNS name patterns
     dnsNames:
       required: true
       validations:
-        - rule: self == '{{ .Values.nadrama.ingress.hostname }}' || self == '*.{{ .Values.nadrama.ingress.hostname }}'
-          message: "DNS names must be {{ .Values.nadrama.ingress.hostname }} or *.{{ .Values.nadrama.ingress.hostname }}"
+        - rule: self == '{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}' || self == '*.{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}'
+          message: 'DNS names must be {{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }} or *.{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}'
     # Restrict to server auth only
     usages:
       - "digital signature"

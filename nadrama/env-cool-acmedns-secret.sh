@@ -4,7 +4,7 @@
 set -eo pipefail
 
 SECRET_NAME="env-cool-acmedns-secret"
-SECRET_NS="system-traefik"
+SECRET_NS="system-nadrama"
 
 # Exit early if secret already exists
 kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0

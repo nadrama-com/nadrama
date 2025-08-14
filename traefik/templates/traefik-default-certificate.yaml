@@ -7,14 +7,4 @@ metadata:
   name: traefik-default-certificate
 spec:
   secretName: traefik-default-certificate-secret
-  dnsNames:
-    - {{ .Values.nadrama.ingress.hostname }}
-    - "*.{{ .Values.nadrama.ingress.hostname }}"
-  issuerRef:
-    {{ if .Values.nadrama.ingress.letsencrypt }}
-    kind: Issuer
-    name: env-cool-issuer
-    {{ else }}
-    kind: ClusterIssuer
-    name: selfsigned-clusterissuer
-    {{ end }}
+  {{- .Values.nadrama.traefik.defaultCertificate | toYaml | nindent 2 }}

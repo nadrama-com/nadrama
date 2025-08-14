@@ -10,7 +10,7 @@ spec:
     - name: traefik-gateway
       namespace: system-traefik
   hostnames:
-    - "argocd.{{ .Values.nadrama.ingress.hostname }}"
+    - 'argocd.{{ index .Values.nadrama "argocd" "hostname" }}'
   rules:
     - matches:
         - path:

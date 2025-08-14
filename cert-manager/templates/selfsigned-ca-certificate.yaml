@@ -8,7 +8,7 @@ metadata:
   name: selfsigned-ca-certificate
 spec:
   secretName: selfsigned-ca-certificate-secret
-  commonName: "{{ .Values.nadrama.ingress.hostname }}"
+  commonName: '{{ index .Values.nadrama "cert-manager" "clusterCA" "commonName" }}'
   isCA: true
   issuerRef:
     kind: Issuer
