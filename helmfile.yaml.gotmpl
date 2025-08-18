@@ -89,19 +89,17 @@ releases:
 
 {{- range $crdCharts }}
   - name: system-{{ . }}
-    chart: ./{{ . }}
+    chart: ./crds/{{ . }}
     namespace: system-cluster
     condition: platform.system.crds.{{ . }}.enabled
     labels:
       type: crd
-    values:
-      - {{ . }}/values.yaml
 {{- end }}
 
   # Apps
 
   - name: system-namespaces
-    chart: ./namespaces
+    chart: ./apps/namespaces
     namespace: system-cluster
     condition: platform.system.apps.namespaces.enabled
     needs:
@@ -115,7 +113,7 @@ releases:
       - _values/namespaces.yaml
 
   - name: system-rbac
-    chart: ./rbac
+    chart: ./apps/rbac
     namespace: system-cluster
     condition: platform.system.apps.rbac.enabled
     needs:
@@ -127,7 +125,7 @@ releases:
       - _values/rbac.yaml
 
   - name: system-cilium
-    chart: ./cilium
+    chart: ./apps/cilium
     namespace: system-cilium
     condition: platform.system.apps.cilium.enabled
     needs:
@@ -139,7 +137,7 @@ releases:
       - _values/cilium.yaml
 
   - name: system-coredns
-    chart: ./coredns
+    chart: ./apps/coredns
     namespace: system-coredns
     condition: platform.system.apps.coredns.enabled
     needs:
@@ -151,7 +149,7 @@ releases:
       - _values/coredns.yaml
 
   - name: system-snapshot
-    chart: ./snapshot
+    chart: ./apps/snapshot
     namespace: system-snapshot
     condition: platform.system.apps.snapshot.enabled
     needs:
@@ -163,7 +161,7 @@ releases:
       - _values/snapshot.yaml
 
   - name: system-csi-aws-ebs
-    chart: ./csi-aws-ebs
+    chart: ./apps/csi-aws-ebs
     namespace: system-csi-aws-ebs
     condition: platform.system.apps.csi-aws-ebs.enabled
     needs:
@@ -176,7 +174,7 @@ releases:
       - _values/csi-aws-ebs.yaml
 
   - name: system-cert-manager
-    chart: ./cert-manager
+    chart: ./apps/cert-manager
     namespace: system-cert-manager
     condition: platform.system.apps.cert-manager.enabled
     needs:
@@ -188,7 +186,7 @@ releases:
       - _values/cert-manager.yaml
 
   - name: system-trust-manager
-    chart: ./trust-manager
+    chart: ./apps/trust-manager
     namespace: system-trust-manager
     condition: platform.system.apps.trust-manager.enabled
     needs:
@@ -199,14 +197,11 @@ releases:
       type: app
     hooks:
 {{- include "trust-manager.patches" . | nindent 6 }}
-      - events: ["presync"]
-        showlogs: true
-        command: "./trust-manager/pre-install.sh"
     values:
       - _values/trust-manager.yaml
 
   - name: system-traefik
-    chart: ./traefik
+    chart: ./apps/traefik
     namespace: system-traefik
     condition: platform.system.apps.traefik.enabled
     needs:
@@ -221,7 +216,7 @@ releases:
       - _values/traefik.yaml
 
   - name: system-trust-bundles
-    chart: ./trust-bundles
+    chart: ./apps/trust-bundles
     namespace: system-trust-bundles
     condition: platform.system.apps.trust-bundles.enabled
     needs:
@@ -231,15 +226,12 @@ releases:
     labels:
       type: app
     hooks:
-{{ include "trust-manager.patches" . | nindent 6 }}
-      - events: ["presync"]
-        showlogs: true
-        command: "./trust-bundles/pre-install.sh"
+{{- include "trust-manager.patches" . | nindent 6 }}
     values:
       - _values/trust-bundles.yaml
 
   - name: system-sealed-secrets
-    chart: ./sealed-secrets
+    chart: ./apps/sealed-secrets
     namespace: system-sealed-secrets
     condition: platform.system.apps.sealed-secrets.enabled
     needs:
@@ -251,7 +243,7 @@ releases:
       - _values/sealed-secrets.yaml
 
   - name: system-argocd
-    chart: ./argocd
+    chart: ./apps/argocd
     namespace: system-argocd
     condition: platform.system.apps.argocd.enabled
     needs:
@@ -261,15 +253,15 @@ releases:
     labels:
       type: app
     hooks:
-{{ include "cert-manager.patches" . | nindent 6 }}
+{{- include "cert-manager.patches" . | nindent 6 }}
       - events: ["presync"]
         showlogs: true
-        command: "./argocd/pre-install.sh"
+        command: "./apps/argocd/pre-install.sh"
     values:
       - _values/argocd.yaml
 
   - name: system-nadrama
-    chart: ./nadrama
+    chart: ./apps/nadrama
     namespace: system-nadrama
     condition: platform.system.apps.nadrama.enabled
     needs:
@@ -280,12 +272,12 @@ releases:
     hooks:
       - events: ["presync"]
         showlogs: true
-        command: "./nadrama/pre-install.sh"
+        command: "./apps/nadrama/pre-install.sh"
     values:
       - _values/nadrama.yaml
 
   - name: system-platform
-    chart: ./platform
+    chart: ./apps/platform
     namespace: system-platform
     needs:
       - system-cluster/system-namespaces

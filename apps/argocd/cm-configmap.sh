@@ -12,7 +12,7 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 #kubectl get configmap -n "${CM_NS}" "${CM_NAME}" &>/dev/null && exit 0
 
 # Extract hostname from values file
-ARGOCD_DOMAIN=$(yq eval '.nadrama.argocd.hostname' "${CURRENT}/../_values/argocd.yaml")
+ARGOCD_DOMAIN=$(yq eval '.nadrama.argocd.hostname' "${CURRENT}/../../_values/argocd.yaml")
 
 # Check argocd domain was extracted
 if [ -z "${ARGOCD_DOMAIN}" ] || [ "${ARGOCD_DOMAIN}" = "null" ]; then

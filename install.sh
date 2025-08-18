@@ -26,7 +26,7 @@ if [ ! -d "${CURRENT}/_values" ]; then
     exit 1
 fi
 
-# Ensure webhooks are restored on script error/cancellation
+# Ensure webhooks are disabled then restored on script error/cancellation
 patch_webhooks() {
     local policy="$1"
     if [[ "$policy" != "Ignore" ]] && [[ "$policy" != "Fail" ]]; then
@@ -35,14 +35,15 @@ patch_webhooks() {
     fi
     echo "Setting webhooks to ${policy}..."
     # Restore cert-manager webhooks
-    kubectl patch mutatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
-    kubectl patch validatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
-    kubectl patch validatingwebhookconfiguration/system-cert-manager-approver-policy --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    kubectl patch mutatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': '${policy}'}]" &> /dev/null || true
+    kubectl patch validatingwebhookconfiguration/system-cert-manager-webhook --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': '${policy}'}]" &> /dev/null || true
+    kubectl patch validatingwebhookconfiguration/system-cert-manager-approver-policy --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': '${policy}'}]" &> /dev/null || true
     # Restore trust-manager webhooks
-    kubectl patch validatingwebhookconfiguration/system-trust-manager --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Fail'}]" &> /dev/null || true
+    kubectl patch validatingwebhookconfiguration/system-trust-manager --type='json' -p="[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': '${policy}'}]" &> /dev/null || true
     echo "Webhooks set to ${policy} successfully."
 }
 trap 'patch_webhooks Fail' EXIT
+patch_webhooks 'Ignore'
 
 # Install specific chart if provided
 if [[ -n "${1}" ]]; then
