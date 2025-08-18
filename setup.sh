@@ -80,7 +80,7 @@ platform:
         enabled: true
       argocd:
         enabled: true
-      nadrama:
+      nadrama-paas:
         enabled: false
 EOF
 

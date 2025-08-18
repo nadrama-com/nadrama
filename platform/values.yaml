@@ -67,6 +67,6 @@ platform:
       argocd:
         enabled: true
         namespace: system-argocd
-      nadrama:
+      nadrama-paas:
         enabled: false
-        namespace: system-nadrama
+        namespace: system-nadrama-paas
