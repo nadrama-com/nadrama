@@ -4,7 +4,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: nadrama-hello-httproute
+  name: {{ .Values.name }}-httproute
 spec:
   parentRefs:
     - name: traefik-gateway
@@ -15,20 +15,20 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: nadrama-hello-service
+        - name: {{ .Values.name }}-service
           port: 443
 ---
 apiVersion: gateway.networking.k8s.io/v1alpha3
 kind: BackendTLSPolicy
 metadata:
-  name: nadrama-hello-backend-tls-policy
+  name: {{ .Values.name }}-backend-tls-policy
 spec:
   targetRefs:
     - group: "" # must be blank
       kind: Service
-      name: nadrama-hello-service
+      name: {{ .Values.name }}-service
   validation:
-    hostname: nadrama-hello-service.default.svc.cluster.local
+    hostname: {{ .Values.name }}-service.default.svc.cluster.local
     caCertificateRefs:
       - group: "" # must be blank
         name: selfsigned-ca-bundle
