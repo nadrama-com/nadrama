@@ -3,3 +3,5 @@
 ---
 name: nadrama-webapp
 image: nadrama/hello-world:latest
+hostname: ""
+path: /
