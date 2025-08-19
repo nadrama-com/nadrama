@@ -4,7 +4,9 @@ Want to quickly deploy apps, containers, and agents on Kubernetes? The Nadrama p
 
 We have combined proven Open Source components in a cohesive platform configuration, enabling you to turn a barebones Kubernetes cluster into an easy to use platform solution.
 
-The Nadrama platform these apps and their CRDs:
+The Nadrama platform includes:
+
+__Apps (and their CRDs):__
 
 * [ArgoCD](https://argo-cd.readthedocs.io/en/stable/) for continuous deployments (_Apache 2.0 license_).
 * [Cert Manager](https://cert-manager.io/) for TLS certificate management (_Apache 2.0 license_).
@@ -16,12 +18,12 @@ The Nadrama platform these apps and their CRDs:
 * [Traefik](https://traefik.io/) for ingress (_MIT license_).
 * [Trust Manager](https://cert-manager.io/docs/trust/trust-manager/) for certificate trust store management (_Apache 2.0 license_).
 
-and the following additional CRDs:
+__Additional CRDs:__
 
 * [Cluster API CRDs](https://cluster-api.sigs.k8s.io/) for standardized auto-scaling APIs
 * [Gateway API CRDs](https://gateway-api.sigs.k8s.io/) for standardized ingress APIs
 
-In addition to the above, the platform also configures defaults for:
+__Defaults for:__
 
 * RBAC
 * Trust Bundles
@@ -63,7 +65,7 @@ Setup a `values.yaml` file per app, stored under `_values`:
 
 - Note that you may wish to store this in your own Git repo, if so, just symlink it to `_values`.
 
-- Each of these files will be embedded into the corresponding ArgoCD application so changes are not written during any ArgoCD syncs.
+- Each of these files will be embedded into the corresponding ArgoCD application so changes are not overwritten during any ArgoCD syncs.
 
 Render all charts to the `./_rendered` directory:
 
