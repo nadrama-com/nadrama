@@ -54,6 +54,8 @@ platform:
         enabled: true
       sealed-secrets-crds:
         enabled: true
+      external-secrets-crds:
+        enabled: true
     # Apps
     apps:
       namespaces:

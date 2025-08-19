@@ -1,20 +1,22 @@
 repositories:
-  - name: jetstack
-    url: https://charts.jetstack.io
-  - name: traefik
-    url: https://traefik.github.io/charts
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+  - name: aws-ebs-csi-driver
+    url: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
   - name: cilium
     url: https://helm.cilium.io
   - name: coredns
     url: https://coredns.github.io/helm
-  - name: aws-ebs-csi-driver
-    url: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
-  - name: sealed-secrets
-    url: https://bitnami-labs.github.io/sealed-secrets
-  - name: argo
-    url: https://argoproj.github.io/argo-helm
+  - name: external-secrets
+    url: https://charts.external-secrets.io
+  - name: jetstack
+    url: https://charts.jetstack.io
   - name: piraeus
     url: https://piraeus.io/helm-charts/
+  - name: sealed-secrets
+    url: https://bitnami-labs.github.io/sealed-secrets
+  - name: traefik
+    url: https://traefik.github.io/charts
 
 values:
   - _values/platform.yaml
@@ -29,41 +31,42 @@ values:
   "gateway-api-crds"
   "traefik-crds"
   "argocd-crds"
-  "sealed-secrets-crds" }}
+  "sealed-secrets-crds"
+  "external-secrets-crds" }}
 
 {{- define "cert-manager.patches" }}
 {{- if ne (env "HELMFILE_OFFLINE") "true" }}
-- events: ["preapply"]
+- events: ["presync"]
   showlogs: true
   command: "bash"
   args:
     - "-c"
     - |
       echo "Patching cert-manager webhooks to Ignore failure policy..."
-      kubectl patch validatingwebhookconfigurations system-cert-manager-webhook \
-        --type='merge' \
-        -p='{"webhooks":[{"name":"webhook.cert-manager.io","failurePolicy":"Ignore"}]}' || true
-      kubectl patch mutatingwebhookconfigurations system-cert-manager-webhook \
-        --type='merge' \
-        -p='{"webhooks":[{"name":"webhook.cert-manager.io","failurePolicy":"Ignore"}]}' || true
-      kubectl patch validatingwebhookconfigurations system-cert-manager-approver-policy \
-        --type='merge' \
-        -p='{"webhooks":[{"name":"policy.cert-manager.io","failurePolicy":"Ignore"}]}' || true
+      kubectl patch validatingwebhookconfiguration/system-cert-manager-webhook \
+        --type='json' \
+        -p='[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Ignore'}]' || true
+      kubectl patch mutatingwebhookconfiguration/system-cert-manager-webhook \
+        --type='json' \
+        -p='[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Ignore'}]' || true
+      kubectl patch validatingwebhookconfiguration/system-cert-manager-approver-policy \
+        --type='json' \
+        -p='[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Ignore'}]' || true
 {{- end }}
 {{- end }}
 
 {{- define "trust-manager.patches" }}
 {{- if ne (env "HELMFILE_OFFLINE") "true" }}
-- events: ["preapply"]
+- events: ["presync"]
   showlogs: true
   command: "bash"
   args:
     - "-c"
     - |
       echo "Patching trust-manager webhooks to Ignore failure policy..."
-      kubectl patch validatingwebhookconfigurations system-trust-manager \
-        --type='merge' \
-        -p='{"webhooks":[{"name":"trust.cert-manager.io","failurePolicy":"Ignore"}]}' || true
+      kubectl patch validatingwebhookconfiguration/system-trust-manager \
+        --type='json' \
+        -p='[{'op': 'replace', 'path': '/webhooks/0/failurePolicy', 'value': 'Ignore'}]' || true
 {{- end }}
 {{- end }}
 
@@ -212,6 +215,8 @@ releases:
       - system-cluster/system-traefik-crds
     labels:
       type: app
+    hooks:
+{{- include "cert-manager.patches" . | nindent 6 }}
     values:
       - _values/traefik.yaml
 
@@ -260,10 +265,10 @@ releases:
     values:
       - _values/argocd.yaml
 
-  - name: system-nadrama
-    chart: ./apps/nadrama
-    namespace: system-nadrama
-    condition: platform.system.apps.nadrama.enabled
+  - name: system-nadrama-paas
+    chart: ./apps/nadrama-paas
+    namespace: system-nadrama-paas
+    condition: platform.system.apps.nadrama-paas.enabled
     needs:
       - system-cluster/system-namespaces
       - system-traefik/system-traefik
@@ -272,9 +277,9 @@ releases:
     hooks:
       - events: ["presync"]
         showlogs: true
-        command: "./apps/nadrama/pre-install.sh"
+        command: "./apps/nadrama-paas/pre-install.sh"
     values:
-      - _values/nadrama.yaml
+      - _values/nadrama-paas.yaml
 
   - name: system-platform
     chart: ./apps/platform

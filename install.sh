@@ -43,7 +43,7 @@ patch_webhooks() {
     echo "Webhooks set to ${policy} successfully."
 }
 trap 'patch_webhooks Fail' EXIT
-patch_webhooks 'Ignore'
+# patch_webhooks 'Ignore'
 
 # Install specific chart if provided
 if [[ -n "${1}" ]]; then

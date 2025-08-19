@@ -29,6 +29,9 @@ platform:
       sealed-secrets-crds:
         enabled: true
         namespace: system-cluster
+      external-secrets-crds:
+        enabled: true
+        namespace: system-cluster
     # Apps
     apps:
       namespaces:
