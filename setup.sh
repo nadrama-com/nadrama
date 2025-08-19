@@ -157,4 +157,7 @@ for chart in namespaces rbac cilium coredns snapshot trust-manager trust-bundles
   touch "${CURRENT}/_values/${chart}.yaml"
 done
 
-echo "Setup complete. Created _values directory with individual chart values files."
+# Add Helm repositories from helmfile
+helmfile repos
+
+echo "Setup complete. Created _values directory with individual chart values files and added Helm repositories."
