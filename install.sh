@@ -45,11 +45,13 @@ patch_webhooks() {
 trap 'patch_webhooks Fail' EXIT
 # patch_webhooks 'Ignore'
 
-# Install specific chart if provided
-if [[ -n "${1}" ]]; then
-    echo "Installing specific chart: ${1}"
-    helmfile --args "--skip-crds" --skip-refresh -l "chart=${1}" sync
+# Install specific chart if provided, or pass all args to helmfile
+if [[ -n "${1}" && ! "${1}" =~ ^-- ]]; then
+    chart_name="${1}"
+    shift
+    echo "Installing specific chart: ${chart_name}"
+    helmfile --args "--skip-crds" --skip-refresh -l "chart=${chart_name}" "$@" sync
 else
     echo "Installing all charts with helmfile..."
-    helmfile --args "--skip-crds" --skip-refresh sync
+    helmfile --args "--skip-crds" --skip-refresh "$@" sync
 fi
