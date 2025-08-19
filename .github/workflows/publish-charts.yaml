@@ -1,0 +1,74 @@
+name: Publish Helm Charts
+on:
+  push:
+    branches: [v1]
+
+env:
+  TARGET_REPO: nadrama-com/charts
+  TARGET_BRANCH: gh-pages
+  PUBLISH_BASE: https://nadrama-com.github.io/charts
+  ROOTS: templates
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Package charts from roots (i.e. templates/) with timestamp version
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          VERSION=v1-$(date +'%Y%m%d%H%M%S')
+          for root in $ROOTS; do
+            [ -d "$root" ] || continue
+            while IFS= read -r chart; do
+              out="dist/$root"
+              mkdir -p "$out"
+              echo "Packaging $chart -> $out (version $VERSION)"
+              helm dependency build "$chart" || true
+              helm package "$chart" --destination "$out" --version "$VERSION"
+            done < <(find "$root" -type f -name Chart.yaml -printf '%h\n' | sort -u)
+          done
+
+      - name: Checkout target repo (pages)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: ${{ env.TARGET_BRANCH }}
+          ssh-key: ${{ secrets.GH_DEPLOY_KEY }}
+          path: target
+
+      - name: Copy packages & build per-folder Helm indexes
+        working-directory: target
+        run: |
+          set -euo pipefail
+          # copy packaged charts preserving crds/apps/templates structure
+          rsync -av --mkpath ../dist/ ./
+
+          # build an index.yaml inside each folder (creates three independent repos)
+          for root in $ROOTS; do
+            [ -d "$root" ] || continue
+            # ensure folder exists even if no charts this run (keeps URLs stable)
+            mkdir -p "$root"
+            if [ -f "$root/index.yaml" ]; then
+              helm repo index "$root" --url "${PUBLISH_BASE}/${root}" --merge "$root/index.yaml"
+            else
+              helm repo index "$root" --url "${PUBLISH_BASE}/${root}"
+            fi
+          done
+
+      - name: Commit & push
+        working-directory: target
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish charts from $GITHUB_REPOSITORY@$GITHUB_SHA" || exit 0
+          git push origin "${TARGET_BRANCH}"
