@@ -46,14 +46,3 @@ coredns:
   rollingUpdate:
     maxUnavailable: 0
     maxSurge:: 1
-  # loads the upstream nameserver config from systemd-resolve
-  # see https://coredns.io/plugins/loop/#troubleshooting-loops-in-kubernetes-clusters
-  extraVolumes:
-    - name: systemd-resolve
-      hostPath:
-        path: /run/systemd/resolve/resolv.conf
-        type: File
-  extraVolumeMounts:
-    - name: systemd-resolve
-      mountPath: /etc/resolv.conf
-      readOnly: true

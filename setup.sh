@@ -92,11 +92,26 @@ argo-cd:
     domain: "argocd.${INGRESS_HOSTNAME}${INGRESS_PORT}"
 EOF
 
+cat > "${CURRENT}/_values/coredns.yaml" <<EOF
+# coredns:
+#   # loads the upstream nameserver config from systemd-resolve
+#   # see https://coredns.io/plugins/loop/#troubleshooting-loops-in-kubernetes-clusters
+#   extraVolumes:
+#     - name: systemd-resolve
+#       hostPath:
+#         path: /run/systemd/resolve/resolv.conf
+#         type: File
+#   extraVolumeMounts:
+#     - name: systemd-resolve
+#       mountPath: /etc/resolv.conf
+#       readOnly: true
+EOF
+
 cat > "${CURRENT}/_values/csi-aws-ebs.yaml" <<EOF
-aws-ebs-csi-driver:
-  controller:
-    podAnnotations:
-      iam.amazonaws.com/role: "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/nadrama-YOUR_CLUSTER_SLUG-ebs-csi"
+# aws-ebs-csi-driver:
+#   controller:
+#     podAnnotations:
+#       iam.amazonaws.com/role: "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/nadrama-YOUR_CLUSTER_SLUG-ebs-csi"
 EOF
 
 cat > "${CURRENT}/_values/cert-manager.yaml" <<EOF
@@ -108,8 +123,10 @@ nadrama:
       allowedHostname: "${INGRESS_HOSTNAME}"
       selector:
         issuerRef:
+          # kind: Issuer
+          # name: env-cool-issuer
           kind: ClusterIssuer
-          name: env-cool-issuer
+          name: selfsigned-clusterissuer
         namespace:
           matchNames:
             - "system-traefik"
@@ -120,8 +137,10 @@ nadrama:
   traefik:
     defaultCertificate:
       issuerRef:
+        # kind: Issuer
+        # name: env-cool-issuer
         kind: ClusterIssuer
-        name: env-cool-issuer
+        name: selfsigned-clusterissuer
       dnsNames:
       - "${INGRESS_HOSTNAME}"
       - "*.${INGRESS_HOSTNAME}"
@@ -133,14 +152,8 @@ nadrama:
     hostname: "argocd.${INGRESS_HOSTNAME}"
 EOF
 
-cat > "${CURRENT}/_values/nadrama-hello.yaml" <<EOF
-nadrama:
-  ingress:
-    hostname: "${INGRESS_HOSTNAME}"
-EOF
-
 # Create empty values files for charts that don't need configuration
-for chart in namespaces rbac cilium coredns snapshot trust-manager trust-bundles sealed-secrets nadrama platform; do
+for chart in namespaces rbac cilium coredns snapshot trust-manager trust-bundles sealed-secrets platform; do
   touch "${CURRENT}/_values/${chart}.yaml"
 done
 
