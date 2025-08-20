@@ -10,9 +10,9 @@ metadata:
 spec:
   description: System Apps
   sourceNamespaces:
-    - "system-apps"
+    - "system-platform"
   sourceRepos:
-    - "https://github.com/nadrama-com/charts.git"
+    - "https://github.com/nadrama-com/nadrama.git"
   destinations:
     - namespace: "*"
       server: https://kubernetes.default.svc

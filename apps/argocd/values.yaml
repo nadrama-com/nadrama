@@ -24,7 +24,7 @@ argo-cd:
     enabled: false # we have disabled helm hooks and do this via ./redis-password.sh instead
   configs:
     params:
-      application.namespaces: "system-apps"
+      application.namespaces: "system-platform"
     cm:
       # done via helper script: ./cm-configmap.sh
       create: false
