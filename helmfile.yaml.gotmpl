@@ -302,3 +302,15 @@ releases:
 {{- end }}
     values:
       - _values/platform.yaml
+
+  - name: nadrama-webapp
+    chart: ./templates/webapp
+    namespace: default
+    needs:
+      - system-cluster/system-gateway-api-crds
+      - system-cluster/system-cert-manager-crds
+      - system-cert-manager/system-cert-manager
+    labels:
+      type: template
+    hooks:
+{{- include "cert-manager.patches" . | nindent 6 }}
