@@ -18,6 +18,11 @@ repositories:
   - name: traefik
     url: https://traefik.github.io/charts
 
+helmDefaults:
+  args:
+    - "--skip-crds"
+  createNamespace: false
+
 values:
   - _values/platform.yaml
 

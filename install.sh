@@ -50,8 +50,8 @@ if [[ -n "${1}" && ! "${1}" =~ ^-- ]]; then
     chart_name="${1}"
     shift
     echo "Installing specific chart: ${chart_name}"
-    helmfile --args "--skip-crds" --skip-refresh -l "chart=${chart_name}" "$@" sync
+    helmfile --skip-refresh -l "chart=${chart_name}" "$@" sync
 else
     echo "Installing all charts with helmfile..."
-    helmfile --args "--skip-crds" --skip-refresh "$@" sync
+    helmfile --skip-refresh "$@" sync
 fi

@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: system-apps
+  name: system-platform
   annotations:
     meta.helm.sh/release-name: system-namespaces
     meta.helm.sh/release-namespace: system-cluster

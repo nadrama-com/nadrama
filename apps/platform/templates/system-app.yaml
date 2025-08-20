@@ -11,7 +11,7 @@ spec:
   project: system
   source:
     repoURL: "https://github.com/nadrama-com/charts.git"
-    targetRevision: "main" # 'v1' in prod
+    targetRevision: "v1"
     path: "apps/{{ $name }}"
     helm:
       releaseName: "system-{{ $name }}"
