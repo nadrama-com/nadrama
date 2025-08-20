@@ -10,7 +10,7 @@ metadata:
 spec:
   project: system
   source:
-    repoURL: "https://github.com/nadrama-com/charts.git"
+    repoURL: "https://github.com/nadrama-com/nadrama.git"
     targetRevision: "v1"
     path: "apps/{{ $name }}"
     helm:
