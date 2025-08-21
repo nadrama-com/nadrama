@@ -7,4 +7,4 @@ metadata:
   name: default
 spec:
   defaultCertificate:
-    secretName: traefik-default-certificate-secret
+    secretName: {{ .Values.nadrama.traefik.defaultCertificateSecret | default "system-traefik-self-signed-certificate-secret" }}

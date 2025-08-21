@@ -7,18 +7,20 @@
 apiVersion: policy.cert-manager.io/v1alpha1
 kind: CertificateRequestPolicy
 metadata:
-  name: traefik-default-certificate-crp
+  name: system-traefik-default-certificate-crp
 spec:
   selector:
-{{ index .Values.nadrama "cert-manager" "defaultCertificate" "selector" | toYaml | indent 6 }}
+    namespace:
+      matchNames:
+        - "system-traefik"
   allowed:
     # Deny commonName - must not be present
-    # Only allow specific service DNS name patterns
+    # Only allow wildcard DNS name pattern
     dnsNames:
       required: true
       validations:
-        - rule: self == '{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}' || self == '*.{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}'
-          message: 'DNS names must be {{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }} or *.{{ index .Values.nadrama "cert-manager" "defaultCertificate" "allowedHostname" }}'
+        - rule: self == '{{ index .Values.nadrama "cert-manager" "traefikDefaultCertificatePolicy" "allowedHostname" }}' || self == '*.{{ index .Values.nadrama "cert-manager" "traefikDefaultCertificatePolicy" "allowedHostname" }}'
+          message: 'DNS names must be {{ index .Values.nadrama "cert-manager" "traefikDefaultCertificatePolicy" "allowedHostname" }} or *.{{ index .Values.nadrama "cert-manager" "traefikDefaultCertificatePolicy" "allowedHostname" }}'
     # Restrict to server auth only
     usages:
       - "digital signature"

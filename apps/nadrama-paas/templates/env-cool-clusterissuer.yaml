@@ -4,7 +4,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: env-cool-clusterissuer
+  name: system-env-cool-clusterissuer
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
@@ -15,6 +15,6 @@ spec:
       - dns01:
           acmeDNS:
             accountSecretRef:
-              name: env-cool-acmedns-secret
+              name: system-env-cool-acmedns-secret
               key: acmedns.json
             host: https://nadrama.cool/acmedns/env.cool

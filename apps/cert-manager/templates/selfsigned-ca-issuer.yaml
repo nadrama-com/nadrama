@@ -5,6 +5,6 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: selfsigned-ca-issuer
+  name: system-selfsigned-ca-issuer
 spec:
   selfSigned: {}

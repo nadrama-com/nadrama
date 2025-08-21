@@ -4,7 +4,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: traefik-gateway
+  name: system-traefik-gateway
 spec:
   gatewayClassName: system-traefik
   listeners:
@@ -18,7 +18,7 @@ spec:
         mode: Terminate
         certificateRefs:
           - kind: Secret
-            name: traefik-default-certificate-secret
+            name: {{ .Values.nadrama.traefik.defaultCertificateSecret | default "system-traefik-self-signed-certificate-secret" }}
     - name: http
       protocol: HTTP
       port: 80

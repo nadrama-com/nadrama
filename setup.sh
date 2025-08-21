@@ -124,29 +124,24 @@ nadrama:
   cert-manager:
     clusterCA:
       commonName: "${INGRESS_HOSTNAME}"
-    defaultCertificate:
+    traefikDefaultCertificatePolicy:
       allowedHostname: "${INGRESS_HOSTNAME}"
-      selector:
-        issuerRef:
-          kind: ClusterIssuer
-          # name: env-cool-clusterissuer
-          name: selfsigned-clusterissuer
-        namespace:
-          matchNames:
-            - "system-traefik"
 EOF
 
 cat > "${CURRENT}/_values/traefik.yaml" <<EOF
 nadrama:
   traefik:
-    defaultCertificate:
-      issuerRef:
-        kind: ClusterIssuer
-        # name: env-cool-clusterissuer
-        name: selfsigned-clusterissuer
+    # defaultCertificateSecret: system-traefik-ca-signed-certificate-secret
+    certificates:
       dnsNames:
       - "${INGRESS_HOSTNAME}"
       - "*.${INGRESS_HOSTNAME}"
+      selfsigned:
+        issuerRef:
+          name: system-selfsigned-clusterissuer
+      casigned:
+        issuerRef:
+          # name: system-env-cool-clusterissuer
 EOF
 
 cat > "${CURRENT}/_values/argocd.yaml" <<EOF

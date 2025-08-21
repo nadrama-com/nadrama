@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 set -eo pipefail
 
-SECRET_NAME="env-cool-acmedns-secret"
-SECRET_NS="system-nadrama"
+SECRET_NAME="system-env-cool-acmedns-secret"
+# note: must be the same as where the certificate is requested
+SECRET_NS="system-traefik"
 
 # Exit early if secret already exists
 kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0

@@ -7,12 +7,12 @@
 apiVersion: policy.cert-manager.io/v1alpha1
 kind: CertificateRequestPolicy
 metadata:
-  name: selfsigned-clusterissuer-crp
+  name: system-selfsigned-clusterissuer-crp
 spec:
   selector:
     issuerRef:
       kind: ClusterIssuer
-      name: selfsigned-clusterissuer
+      name: system-selfsigned-clusterissuer
   allowed:
     # commonName can be either empty or the `service.namespace`
     commonName:

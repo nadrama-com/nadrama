@@ -5,11 +5,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: selfsigned-ca-certificate
+  name: system-selfsigned-ca-certificate
 spec:
-  secretName: selfsigned-ca-certificate-secret
+  secretName: system-selfsigned-ca-certificate-secret
   commonName: '{{ index .Values.nadrama "cert-manager" "clusterCA" "commonName" }}'
   isCA: true
   issuerRef:
     kind: Issuer
-    name: selfsigned-ca-issuer
+    name: system-selfsigned-ca-issuer

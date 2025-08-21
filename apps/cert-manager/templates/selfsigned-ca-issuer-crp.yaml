@@ -5,12 +5,12 @@
 apiVersion: policy.cert-manager.io/v1alpha1
 kind: CertificateRequestPolicy
 metadata:
-  name: selfsigned-ca-issuer-crp
+  name: system-selfsigned-ca-issuer-crp
 spec:
   selector:
     issuerRef:
       kind: Issuer
-      name: selfsigned-ca-issuer
+      name: system-selfsigned-ca-issuer
     namespace:
       matchNames:
         - "system-cert-manager"
