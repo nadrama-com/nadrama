@@ -9,7 +9,7 @@ CM_NS=system-argocd
 CURRENT=$(dirname "$(readlink -f "$0")")
 
 # Exit early if configmap already exists
-#kubectl get configmap -n "${CM_NS}" "${CM_NAME}" &>/dev/null && exit 0
+kubectl get configmap -n "${CM_NS}" "${CM_NAME}" &>/dev/null && exit 0
 
 # Extract hostname from values file
 ARGOCD_DOMAIN=$(yq eval '.nadrama.argocd.hostname' "${CURRENT}/../../_values/argocd.yaml")

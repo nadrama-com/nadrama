@@ -128,6 +128,13 @@ nadrama:
       allowedHostname: "${INGRESS_HOSTNAME}"
 EOF
 
+cat > "${CURRENT}/_values/nadrama-paas.yaml" <<EOF
+nadrama:
+  paas:
+    cluster:
+      fqdn: "${INGRESS_HOSTNAME}"
+EOF
+
 cat > "${CURRENT}/_values/traefik.yaml" <<EOF
 nadrama:
   traefik:

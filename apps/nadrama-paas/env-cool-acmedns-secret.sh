@@ -7,12 +7,17 @@ SECRET_NAME="system-env-cool-acmedns-secret"
 # note: must be the same as where the certificate is requested
 SECRET_NS="system-traefik"
 
+CURRENT=$(dirname "$(readlink -f "$0")")
+
 # Exit early if secret already exists
 kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0
 
-# Check ingress hostname was loaded from values file
-if [ -z "$INGRESS_HOSTNAME" ]; then
-  echo "INGRESS_HOSTNAME is not loaded from values.yaml. Please run setup.sh"
+# Extract cluster fqdn from values file
+CLUSTER_FQDN=$(yq eval '.nadrama.paas.cluster.fqdn' "${CURRENT}/../../_values/nadrama-paas.yaml")
+
+# Check cluster fqdn was loaded from values file
+if [ -z "$CLUSTER_FQDN" ]; then
+  echo "CLUSTER_FQDN is not loaded from _values/nadrama-paas.yaml. Please run setup.sh"
   exit 1
 fi
 
@@ -28,7 +33,7 @@ RANDOM_PASSWORD=$(openssl rand -base64 200 | tr -dc 'a-zA-Z0-9_-' | head -c 100)
 JSON_CONTENT=$(
 cat - <<EOF
 {
-  "${INGRESS_HOSTNAME}": {
+  "${CLUSTER_FQDN}": {
     "username": "local",
     "password": "${RANDOM_PASSWORD}",
     "fulldomain": "",
