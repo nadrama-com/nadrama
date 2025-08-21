@@ -128,9 +128,8 @@ nadrama:
       allowedHostname: "${INGRESS_HOSTNAME}"
       selector:
         issuerRef:
-          # kind: Issuer
-          # name: env-cool-issuer
           kind: ClusterIssuer
+          # name: env-cool-clusterissuer
           name: selfsigned-clusterissuer
         namespace:
           matchNames:
@@ -142,9 +141,8 @@ nadrama:
   traefik:
     defaultCertificate:
       issuerRef:
-        # kind: Issuer
-        # name: env-cool-issuer
         kind: ClusterIssuer
+        # name: env-cool-clusterissuer
         name: selfsigned-clusterissuer
       dnsNames:
       - "${INGRESS_HOSTNAME}"

@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
-  name: env-cool-issuer
+  name: env-cool-clusterissuer
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
