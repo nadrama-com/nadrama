@@ -42,7 +42,7 @@ argo-cd:
         - system-argocd-server.system-argocd.svc.cluster.local
       issuer:
         kind: ClusterIssuer
-        name: selfsigned-clusterissuer
+        name: system-selfsigned-clusterissuer
   application-set:
     certificate:
       enabled: true
@@ -53,4 +53,4 @@ argo-cd:
         - system-argocd-application-set-controller.system-argocd.svc.cluster.local
       issuer:
         kind: ClusterIssuer
-        name: selfsigned-clusterissuer
+        name: system-selfsigned-clusterissuer
