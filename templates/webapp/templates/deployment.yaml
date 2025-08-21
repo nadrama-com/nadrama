@@ -9,6 +9,11 @@ data:
   Caddyfile: |
     {
       auto_https off
+      {{- if .Values.metrics }}
+      {{- if .Values.metrics.http }}
+      metrics
+      {{- end }}
+      {{- end }}
     }
     :443 {
       tls /etc/caddy/certs/tls.crt /etc/caddy/certs/tls.key
@@ -32,8 +37,6 @@ spec:
       containers:
         - name: {{ .Values.name }}-container
           image: {{ .Values.image }}
-          ports:
-            - containerPort: 80
           resources:
             requests:
               cpu: "50m"
@@ -45,6 +48,11 @@ spec:
           image: caddy
           ports:
             - containerPort: 443
+            {{- if .Values.metrics }}
+            {{- if .Values.metrics.http }}
+            - containerPort: 2019
+            {{- end }}
+            {{- end }}
           resources:
             requests:
               cpu: "100m"

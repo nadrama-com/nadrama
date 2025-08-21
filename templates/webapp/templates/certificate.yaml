@@ -14,4 +14,4 @@ spec:
     - {{ .Values.name }}-service.default.svc.cluster.local
   issuerRef:
     kind: ClusterIssuer
-    name: selfsigned-clusterissuer
+    name: system-selfsigned-clusterissuer
