@@ -6,7 +6,7 @@ kind: Namespace
 metadata:
   name: system-csi-aws-ebs
   annotations:
-    meta.helm.sh/release-name: system-csi-aws-ebs
+    meta.helm.sh/release-name: system-namespaces
     meta.helm.sh/release-namespace: system-cluster
     helm.sh/resource-policy: keep
     iam.amazonaws.com/allowed-roles: |

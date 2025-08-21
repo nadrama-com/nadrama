@@ -6,7 +6,7 @@ kind: Namespace
 metadata:
   name: system-snapshot
   annotations:
-    meta.helm.sh/release-name: system-snapshot
+    meta.helm.sh/release-name: system-namespaces
     meta.helm.sh/release-namespace: system-cluster
     helm.sh/resource-policy: keep
   labels:
