@@ -6,20 +6,8 @@ set -eo pipefail
 CURRENT=$(dirname "$(readlink -f "$0")")
 
 # Check dependencies
-deps=(
-    kubectl
-    helm
-    helmfile
-    jq
-    yq
-    gcsplit
-)
-for dep in "${deps[@]}"; do
-    if ! command -v "$dep" &>/dev/null; then
-        echo "Error: $dep command not found. Please install '$dep' first. Exiting..."
-        exit 1
-    fi
-done
+source "${CURRENT}/scripts/deps.sh"
+check_deps gcsplit
 
 # Check setup was run
 if [ ! -d "${CURRENT}/_values" ]; then
@@ -41,10 +29,10 @@ HELMFILE_FLAGS="--skip-deps --skip-tests --skip-needs --no-hooks"
 # Render specific chart if provided
 if [[ -n "${1}" ]]; then
     echo "Rendering specific chart: ${1}"
-    helmfile -l "chart=${1}" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+    helmfile --args "--skip-crds" -l "chart=${1}" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
 else
     echo "Rendering all charts with helmfile..."
-    helmfile template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+    helmfile --args "--skip-crds" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
 fi
 exit 0
 # Split any multi-document YAML files into individual files

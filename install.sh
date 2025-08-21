@@ -6,19 +6,8 @@ set -eo pipefail
 CURRENT=$(dirname "$(readlink -f "$0")")
 
 # Check dependencies
-deps=(
-    kubectl
-    helm
-    helmfile
-    jq
-    yq
-)
-for dep in "${deps[@]}"; do
-    if ! command -v "$dep" &>/dev/null; then
-        echo "Error: $dep command not found. Please install '$dep' first. Exiting..."
-        exit 1
-    fi
-done
+source "${CURRENT}/scripts/deps.sh"
+check_deps
 
 # Check setup was run
 if [ ! -d "${CURRENT}/_values" ]; then
@@ -50,8 +39,8 @@ if [[ -n "${1}" && ! "${1}" =~ ^-- ]]; then
     chart_name="${1}"
     shift
     echo "Installing specific chart: ${chart_name}"
-    helmfile --skip-refresh -l "chart=${chart_name}" "$@" sync
+    helmfile --skip-refresh --args "--skip-crds" -l "chart=${chart_name}" "$@" sync
 else
     echo "Installing all charts with helmfile..."
-    helmfile --skip-refresh "$@" sync
+    helmfile --skip-refresh --args "--skip-crds" "$@" sync
 fi

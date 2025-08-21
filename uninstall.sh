@@ -6,17 +6,8 @@
 set -eo pipefail
 
 # Check dependencies
-deps=(
-    kubectl
-    helm
-    helmfile
-)
-for dep in "${deps[@]}"; do
-    if ! command -v "$dep" &>/dev/null; then
-        echo "Error: $dep command not found. Please install '$dep' first. Exiting..."
-        exit 1
-    fi
-done
+source "${CURRENT}/scripts/deps.sh"
+check_deps
 
 # Uninstall specific chart if provided
 if [[ -n "${1}" ]]; then

@@ -5,21 +5,26 @@ set -eo pipefail
 
 CURRENT=$(dirname "$(readlink -f "$0")")
 
+# Check dependencies
+source "${CURRENT}/scripts/deps.sh"
+check_deps
+
+# Check params
 if [ -z "${1}" ]; then
     echo "Usage: $0 <ingress-hostname>"
     exit 1
 fi
 INGRESS_HOSTNAME="${1}"
-
-if [ -d "${CURRENT}/_values" ]; then
-    echo "${CURRENT}/_values directory already exists. Please remove it before running this script."
-    exit 1
-fi
-
 INGRESS_PORT=""
 if [[ "${INGRESS_HOSTNAME}" = "local.env.cool" ]]; then
     # Nadrama dev-specific override
     INGRESS_PORT=":4433"
+fi
+
+# Prevent overwriting existing values files
+if [ -d "${CURRENT}/_values" ]; then
+    echo "${CURRENT}/_values directory already exists. Please remove it before running this script."
+    exit 1
 fi
 
 # Create _values directory
