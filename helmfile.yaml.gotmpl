@@ -279,6 +279,9 @@ releases:
       type: app
     hooks:
 {{- include "cert-manager.patches" . | nindent 6 }}
+      - events: ["presync"]
+        showlogs: true
+        command: "./apps/nadrama-paas/pre-install.sh"
     values:
       - _values/nadrama-paas.yaml
 

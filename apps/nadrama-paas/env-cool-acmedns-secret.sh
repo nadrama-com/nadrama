@@ -10,7 +10,7 @@ SECRET_NS="system-traefik"
 CURRENT=$(dirname "$(readlink -f "$0")")
 
 # Exit early if secret already exists
-kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &>/dev/null && exit 0
+kubectl get secret -n "${SECRET_NS}" "${SECRET_NAME}" &> /dev/null && echo "${SECRET_NAME} exists." && exit 0 || true
 
 # Extract cluster fqdn from values file
 CLUSTER_FQDN=$(yq eval '.nadrama.paas.cluster.fqdn' "${CURRENT}/../../_values/nadrama-paas.yaml")
@@ -20,6 +20,8 @@ if [ -z "$CLUSTER_FQDN" ]; then
   echo "CLUSTER_FQDN is not loaded from _values/nadrama-paas.yaml. Please run setup.sh"
   exit 1
 fi
+
+echo "Creating ${SECRET_NAME} secret in ${SECRET_NS}..."
 
 # Generate random password
 RANDOM_PASSWORD=$(openssl rand -base64 200 | tr -dc 'a-zA-Z0-9_-' | head -c 100)
