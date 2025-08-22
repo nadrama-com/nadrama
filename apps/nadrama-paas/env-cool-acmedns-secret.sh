@@ -4,8 +4,8 @@
 set -eo pipefail
 
 SECRET_NAME="system-env-cool-acmedns-secret"
-# note: must be the same as where the certificate is requested
-SECRET_NS="system-traefik"
+# note: clusterissuer secrets must be in the cert-manager namespace
+SECRET_NS="system-cert-manager"
 
 CURRENT=$(dirname "$(readlink -f "$0")")
 
