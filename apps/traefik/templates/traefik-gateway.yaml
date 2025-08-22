@@ -18,7 +18,7 @@ spec:
         mode: Terminate
         certificateRefs:
           - kind: Secret
-            name: {{ .Values.nadrama.traefik.defaultCertificateSecret | default "system-traefik-self-signed-certificate-secret" }}
+            name: {{ .Values.nadrama.traefik.defaultCertificateSecret | default "system-traefik-selfsigned-certificate-secret" }}
     - name: http
       protocol: HTTP
       port: 80

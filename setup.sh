@@ -138,7 +138,7 @@ EOF
 cat > "${CURRENT}/_values/traefik.yaml" <<EOF
 nadrama:
   traefik:
-    # defaultCertificateSecret: system-traefik-ca-signed-certificate-secret
+    # defaultCertificateSecret: system-traefik-casigned-certificate-secret
     certificates:
       dnsNames:
       - "${INGRESS_HOSTNAME}"
