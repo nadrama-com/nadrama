@@ -13,4 +13,4 @@ spec:
       key: "ca.crt"
     namespaceSelector:
       matchLabels:
-        cluster.nadrama.com/bundles/default-ca: from-trust-bundles
+        cluster.nadrama.com/bundles-default-ca: from-trust-bundles
