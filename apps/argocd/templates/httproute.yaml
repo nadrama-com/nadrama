@@ -7,7 +7,7 @@ metadata:
   name: system-argocd-httproute
 spec:
   parentRefs:
-    - name: traefik-gateway
+    - name: system-traefik-gateway
       namespace: system-traefik
   hostnames:
     - 'argocd.{{ index .Values.nadrama "argocd" "hostname" }}'
