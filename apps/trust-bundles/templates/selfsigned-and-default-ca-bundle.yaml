@@ -4,16 +4,16 @@
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
-  name: selfsigned-and-default-ca-bundle
+  name: system-selfsigned-and-default-ca-bundle
 spec:
   sources:
     - useDefaultCAs: true
     - secret:
-        name: "selfsigned-ca-certificate-secret"
+        name: "system-selfsigned-ca-certificate-secret"
         key: "tls.crt"
   target:
     configMap:
       key: "ca.crt"
     namespaceSelector:
       matchLabels:
-        selfsigned-and-default-ca-bundle: from-trust-bundles
+        cluster.nadrama.com/bundles/selfsigned-and-default-ca: from-trust-bundles

@@ -11,6 +11,6 @@ metadata:
     helm.sh/resource-policy: keep
   labels:
     app.kubernetes.io/managed-by: Helm
-    default-ca-bundle: from-trust-bundles
-    selfsigned-and-default-ca-bundle: from-trust-bundles
-    selfsigned-ca-bundle: from-trust-bundles
+    cluster.nadrama.com/bundles/default-ca: from-trust-bundles
+    cluster.nadrama.com/bundles/selfsigned-and-default-ca: from-trust-bundles
+    cluster.nadrama.com/bundles/selfsigned-ca: from-trust-bundles

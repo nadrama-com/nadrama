@@ -4,7 +4,7 @@
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
-  name: default-ca-bundle
+  name: system-default-ca-bundle
 spec:
   sources:
     - useDefaultCAs: true
@@ -13,4 +13,4 @@ spec:
       key: "ca.crt"
     namespaceSelector:
       matchLabels:
-        default-ca-bundle: from-trust-bundles
+        cluster.nadrama.com/bundles/default-ca: from-trust-bundles
