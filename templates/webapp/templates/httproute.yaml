@@ -35,5 +35,5 @@ spec:
     hostname: {{ .Values.name }}-service.default.svc.cluster.local
     caCertificateRefs:
       - group: "" # must be blank
-        name: selfsigned-ca-bundle
+        name: system-selfsigned-ca-bundle
         kind: ConfigMap
