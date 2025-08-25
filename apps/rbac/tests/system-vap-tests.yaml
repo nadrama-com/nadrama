@@ -58,3 +58,43 @@ tests:
   - request: configmap-create-user-namespace
     user: editor
     expect: Pass
+  - request: vap-create-system-prefix
+    user: system
+    expect: Pass
+  # should not be able to create vap with "system-" prefix
+  - request: vap-create-system-prefix
+    user: admin
+    expect: Fail
+  - request: vap-create-system-prefix
+    user: editor
+    expect: Fail
+  - request: vap-delete-system-prefix
+    user: system
+    expect: Pass
+  # should not be able to delete vap with "system-" prefix
+  - request: vap-delete-system-prefix
+    user: admin
+    expect: Fail
+  - request: vap-delete-system-prefix
+    user: editor
+    expect: Fail
+  - request: vap-create-user-prefix
+    user: system
+    expect: Pass
+  # should be able to create vap with "user-" prefix
+  - request: vap-create-user-prefix
+    user: admin
+    expect: Pass
+  - request: vap-create-user-prefix
+    user: editor
+    expect: Pass
+  - request: vap-delete-user-prefix
+    user: system
+    expect: Pass
+  # should be able to delete vap with "user-" prefix
+  - request: vap-delete-user-prefix
+    user: admin
+    expect: Pass
+  - request: vap-delete-user-prefix
+    user: editor
+    expect: Pass
