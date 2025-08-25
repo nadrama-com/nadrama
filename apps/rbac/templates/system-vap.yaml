@@ -22,7 +22,8 @@ spec:
             (
               (!has(request.namespace) || request.namespace == "") && (
                 object.metadata.name.startsWith("kube-") ||
-                object.metadata.name.startsWith("system-")
+                object.metadata.name.startsWith("system-") ||
+                request.kind.kind in ["ClusterRole", "ClusterRoleBinding", "ComponentStatus", "CSIDriver", "APIService", "CustomResourceDefinition"]
               )
             ) ||
             (
@@ -34,7 +35,7 @@ spec:
             )
           )
         )
-      message: "Access to system-/kube- prefixed resources and namespaces is restricted. See https://nadrama.com/docs/limits"
+      message: "Access to system-/kube- prefixed resources and namespaces and critical cluster resources is restricted. See https://nadrama.com/docs/limits"
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
