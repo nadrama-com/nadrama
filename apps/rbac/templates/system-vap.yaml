@@ -20,15 +20,16 @@ spec:
           request.userInfo.groups.exists(g, g.startsWith("nadrama:")) &&
           (
             (
-              (!has(request.namespace) || request.namespace == "") && (
+              (!has(object.metadata.namespace) || object.metadata.namespace == "") && (
                 object.metadata.name.startsWith("kube-") ||
                 object.metadata.name.startsWith("system-") ||
-                request.kind.kind in ["ClusterRole", "ClusterRoleBinding", "ComponentStatus", "CSIDriver", "APIService", "CustomResourceDefinition"]
+                (has(object.kind) && object.kind in ["ClusterRole", "ClusterRoleBinding", "ComponentStatus", "CSIDriver", "APIService", "CustomResourceDefinition"]) ||
+                (has(oldObject.kind) && oldObject.kind in ["ClusterRole", "ClusterRoleBinding", "ComponentStatus", "CSIDriver", "APIService", "CustomResourceDefinition"])
               )
             ) ||
             (
-              has(request.namespace) && request.namespace != "" && (
-                request.namespace.startsWith("kube-") || request.namespace.startsWith("system-")
+              has(object.metadata.namespace) && object.metadata.namespace != "" && (
+                object.metadata.namespace.startsWith("kube-") || object.metadata.namespace.startsWith("system-")
               ) && !(
                 request.userInfo.groups.exists(g, g == "nadrama:admins") && request.operation == "DELETE" && oldObject != null && oldObject.kind == "Pod"
               )
