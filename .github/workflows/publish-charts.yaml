@@ -10,7 +10,11 @@ env:
   ROOTS: templates
 
 jobs:
+  rbac-tests:
+    uses: ./.github/workflows/rbac-tests.yml
+
   publish:
+    needs: rbac-tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
