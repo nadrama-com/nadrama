@@ -23,6 +23,14 @@ spec:
       prune: true
       allowEmpty: true
       selfHeal: true
+{{ if eq $name "csi-aws-ebs" }}
+  ignoreDifferences:
+    - group: storage.k8s.io
+      kind: CSIDriver
+      name: ebs.csi.aws.com
+      jqPathExpressions:
+        - .spec.nodeAllocatableUpdatePeriodSeconds
+{{ end }}
   destination:
     server: https://kubernetes.default.svc
     namespace: "{{ $app.namespace }}"
