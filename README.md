@@ -48,7 +48,6 @@ There are 3 types of charts:
 
 3. Template Charts - templated charts designed to simplify deployment of your apps/containers/agents.
 
-
 Note:
 
 - We use [helmfile](https://helmfile.readthedocs.io/en/latest/) (_MIT license_) to handle the rendering/installation/uninstallation of all charts, via our shell scripts (see below).
@@ -97,6 +96,16 @@ In both examples above, it's due to the ValidatingWebhookConfiguration and Mutat
 When running `./install.sh` it will temporarily set the failurePolicy of those webhooks to `Ignore` (fail open). This should permit all charts to install correctly, in a single run. The `./install.sh` script uses a trap to attempt to restore the failurePolicy to `Ignore` once complete.
 
 ## Cluster Design & Assumptions
+
+The design of this repository is such that you can still override all chart values via
+the generated `_values` directory YAML files.
+
+However, we have chosen what we believe are good defaults for all charts, and for any
+configuration option we believe will be commonly overriden (e.g. IP CIDR blocks), we've
+pushed that configuration up into the `_values` directory files to give greater visibility
+into what is likely to need changing dependending on your deploy target.
+
+Here are the assumptions made by the default/generated values files:
 
 * We assume Kuberentes is configured with dual-stack IPv4 + IPv6.
 
