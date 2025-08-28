@@ -9,13 +9,6 @@
 argo-cd:
   crds:
     install: false
-  global:
-    # set via install.sh/render.sh (see var.sh)
-    dualStack:
-      ipFamilyPolicy: PreferDualStack
-      ipFamilies:
-        - IPv4
-        - IPv6
   dex:
     enabled: false
   redis:

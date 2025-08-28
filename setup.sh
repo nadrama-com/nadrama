@@ -36,6 +36,11 @@ if [[ "${CSI_ALL}" == "true" ]] || [[ "${CSI_ALL}" == 1 ]]; then
     CSI_ALL="true"
 fi
 
+# Define network settings
+IP_FAMILY_POLICY="PreferDualStack"
+IP_FAMILIES_IPV4="- IPv4"
+IP_FAMILIES_IPV6="- IPv6"
+
 # Create values files
 
 cat > "${CURRENT}/_values/platform.yaml" <<EOF
@@ -104,7 +109,10 @@ coredns:
     clusterIPs:
       - "198.19.255.254"
       - "fdc6::ffff"
-    ipFamilyPolicy: "PreferDualStack"
+    ipFamilyPolicy: "${IP_FAMILY_POLICY}"
+    ipFamilies:
+      ${IP_FAMILIES_IPV4}
+      ${IP_FAMILIES_IPV6}
 #   # loads the upstream nameserver config from systemd-resolve
 #   # see https://coredns.io/plugins/loop/#troubleshooting-loops-in-kubernetes-clusters
 #   extraVolumes:
@@ -161,6 +169,13 @@ cat > "${CURRENT}/_values/argocd.yaml" <<EOF
 nadrama:
   argocd:
     hostname: "argocd.${INGRESS_HOSTNAME}"
+argo-cd:
+  global:
+    dualStack:
+      ipFamilyPolicy: "${IP_FAMILY_POLICY}"
+      ipFamilies:
+        ${IP_FAMILIES_IPV4}
+        ${IP_FAMILIES_IPV6}
 EOF
 
 # Create empty values files for charts that don't need configuration
