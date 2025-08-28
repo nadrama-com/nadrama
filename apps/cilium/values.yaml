@@ -7,10 +7,6 @@ cilium:
   operator:
     skipCRDCreation: true
     replicas: 1
-    extraArgs:
-      - "--leader-election-lease-duration=75s"
-      - "--leader-election-renew-deadline=65s"
-      - "--leader-election-retry-period=15s"
   envoy:
     enabled: false
   hubble:
