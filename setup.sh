@@ -136,13 +136,6 @@ nadrama:
       allowedHostname: "${INGRESS_HOSTNAME}"
 EOF
 
-cat > "${CURRENT}/_values/nadrama-paas.yaml" <<EOF
-nadrama:
-  paas:
-    cluster:
-      fqdn: "${INGRESS_HOSTNAME}"
-EOF
-
 cat > "${CURRENT}/_values/traefik.yaml" <<EOF
 nadrama:
   traefik:
@@ -184,8 +177,10 @@ argo-cd:
 EOF
 
 # Create empty values files for charts that don't need configuration
-for chart in namespaces rbac cilium coredns snapshot trust-manager trust-bundles sealed-secrets platform; do
-  touch "${CURRENT}/_values/${chart}.yaml"
+for chart in namespaces rbac cilium snapshot trust-manager trust-bundles sealed-secrets platform; do
+  if [ ! -f "${CURRENT}/_values/${chart}.yaml" ]; then
+    touch "${CURRENT}/_values/${chart}.yaml"
+  fi
 done
 
 # Add Helm repositories from helmfile
