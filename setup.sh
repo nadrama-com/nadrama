@@ -96,6 +96,17 @@ platform:
         enabled: false
 EOF
 
+cat > "${CURRENT}/_values/cilium.yaml" <<EOF
+cilium:
+  kubeProxyReplacement: true
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: true
+  ipam:
+    mode: "kubernetes"
+EOF
+
 cat > "${CURRENT}/_values/coredns.yaml" <<EOF
 coredns:
   service:
@@ -177,7 +188,7 @@ argo-cd:
 EOF
 
 # Create empty values files for charts that don't need configuration
-for chart in namespaces rbac cilium snapshot trust-manager trust-bundles sealed-secrets platform; do
+for chart in namespaces rbac snapshot trust-manager trust-bundles sealed-secrets platform; do
   if [ ! -f "${CURRENT}/_values/${chart}.yaml" ]; then
     touch "${CURRENT}/_values/${chart}.yaml"
   fi

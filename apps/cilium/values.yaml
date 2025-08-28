@@ -11,12 +11,5 @@ cilium:
     enabled: false
   hubble:
     enabled: false
-  kubeProxyReplacement: true
-  ipv4:
-    enabled: true
-  ipv6:
-    enabled: true
-  ipam:
-    mode: "kubernetes"
   routingMode: "tunnel"
   tunnelProtocol: "vxlan"
