@@ -38,8 +38,8 @@ fi
 
 # Define network settings
 IP_FAMILY_POLICY="PreferDualStack"
-IP_FAMILIES_IPV4="- IPv4"
-IP_FAMILIES_IPV6="- IPv6"
+IP_FAMILIES_IPV4='- "IPv4"'
+IP_FAMILIES_IPV6='- "IPv6"'
 
 # Create values files
 
@@ -94,12 +94,6 @@ platform:
         enabled: true
       nadrama-paas:
         enabled: false
-EOF
-
-cat > "${CURRENT}/_values/argocd.yaml" <<EOF
-argo-cd:
-  global:
-    domain: "argocd.${INGRESS_HOSTNAME}${INGRESS_PORT}"
 EOF
 
 cat > "${CURRENT}/_values/coredns.yaml" <<EOF
@@ -163,6 +157,17 @@ nadrama:
       casigned:
         issuerRef:
           # name: system-env-cool-clusterissuer
+traefik:
+  service:
+    spec:
+      clusterIP: "198.18.0.2"
+      clusterIPs:
+        - "198.18.0.2"
+        - "fdc6::2"
+    ipFamilyPolicy: "${IP_FAMILY_POLICY}"
+    ipFamilies:
+      ${IP_FAMILIES_IPV4}
+      ${IP_FAMILIES_IPV6}
 EOF
 
 cat > "${CURRENT}/_values/argocd.yaml" <<EOF
