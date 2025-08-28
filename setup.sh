@@ -98,7 +98,13 @@ argo-cd:
 EOF
 
 cat > "${CURRENT}/_values/coredns.yaml" <<EOF
-# coredns:
+coredns:
+  service:
+    clusterIP: "198.19.255.254"
+    clusterIPs:
+      - "198.19.255.254"
+      - "fdc6::ffff"
+    ipFamilyPolicy: "PreferDualStack"
 #   # loads the upstream nameserver config from systemd-resolve
 #   # see https://coredns.io/plugins/loop/#troubleshooting-loops-in-kubernetes-clusters
 #   extraVolumes:

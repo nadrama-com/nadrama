@@ -3,12 +3,6 @@
 ---
 # https://github.com/coredns/helm/blob/master/charts/coredns/values.yaml
 coredns:
-  service:
-    clusterIP: "198.19.255.254"
-    clusterIPs:
-      - "198.19.255.254"
-      - "fdc6::ffff"
-    ipFamilyPolicy: "PreferDualStack"
   podAnnotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
   tolerations:
