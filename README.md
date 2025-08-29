@@ -59,8 +59,10 @@ Note:
 Setup a `values.yaml` file per app, stored under `_values`:
 
 ```
-./setup.sh <ingress-hostname>
+./setup.sh -d <ingress-hostname>
 ```
+
+- If deploying on EKS, specify the extra type flag i.e. `./setup.sh -t eks -d <ingress-hostname>`
 
 - Note that you may wish to store this in your own Git repo, if so, just symlink it to `_values`.
 

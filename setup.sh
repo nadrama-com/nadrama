@@ -9,12 +9,47 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 source "${CURRENT}/scripts/deps.sh"
 check_deps
 
-# Check params
-if [ -z "${1}" ]; then
-    echo "Usage: $0 <ingress-hostname>"
+# Default values
+INGRESS_HOSTNAME=""
+CLUSTER_TYPE="nadrama"
+
+# Parse command line flags
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -d|--domain)
+            INGRESS_HOSTNAME="$2"
+            shift 2
+            ;;
+        -t|--type)
+            CLUSTER_TYPE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            echo "Usage: $0 -d <domain> [-t <cluster-type>]"
+            echo "  -d, --domain       Ingress hostname (required)"
+            echo "  -t, --type         Cluster type (default: nadrama, valid: nadrama|eks)"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 -d <domain> [-t <cluster-type>]"
+            exit 1
+            ;;
+    esac
+done
+
+# Check required params
+if [ -z "${INGRESS_HOSTNAME}" ]; then
+    echo "Error: Domain is required"
+    echo "Usage: $0 -d <domain> [-t <cluster-type>]"
     exit 1
 fi
-INGRESS_HOSTNAME="${1}"
+
+# Validate cluster type
+if [[ "${CLUSTER_TYPE}" != "nadrama" && "${CLUSTER_TYPE}" != "eks" ]]; then
+    echo "Error: Invalid cluster type '${CLUSTER_TYPE}'. Valid options: nadrama, eks"
+    exit 1
+fi
 INGRESS_PORT=""
 if [[ "${INGRESS_HOSTNAME}" = "local.env.cool" ]]; then
     # Nadrama dev-specific override
@@ -40,6 +75,11 @@ fi
 IP_FAMILY_POLICY="PreferDualStack"
 IP_FAMILIES_IPV4='- "IPv4"'
 IP_FAMILIES_IPV6='- "IPv6"'
+if [ "${CLUSTER_TYPE}" = "eks" ]; then
+  IP_FAMILY_POLICY="SingleStack"
+  IP_FAMILIES_IPV4='- "IPv4"'
+  IP_FAMILIES_IPV6=""
+fi
 
 # Create values files
 
@@ -96,24 +136,59 @@ platform:
         enabled: false
 EOF
 
+if [ "${CLUSTER_TYPE}" = "eks" ]; then
 cat > "${CURRENT}/_values/cilium.yaml" <<EOF
 cilium:
-  kubeProxyReplacement: true
   ipv4:
     enabled: true
   ipv6:
     enabled: true
+  routingMode: "native"
+  tunnelProtocol: ""
+  ipam:
+    mode: "eni"
+  eni:
+    enabled: true
+    # ARN of IAM Role with required privileges
+    # @see: https://docs.cilium.io/en/latest/network/concepts/ipam/eni/#required-privileges
+    iamRole: "<CILIUM-ENI-IAM-ROLE-ARN>"
+  egressMasqueradeInterfaces: "eth+"
+  k8sServicePort: 443
+  # Configure AWS_REGION on operator so AWS SDK can successfully perform STS AssumeRole
+  operator:
+    extraEnv:
+    - name: AWS_REGION
+      value: "<YOUR-REGION>"
+  # EKS API Server Endpoint (without "https://" prefix)
+  k8sServiceHost: "<PART-1>.<PART-2>.<YOUR-REGION>.eks.amazonaws.com"
+EOF
+else
+cat > "${CURRENT}/_values/cilium.yaml" <<EOF
+cilium:
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: true
+  routingMode: "tunnel"
+  tunnelProtocol: "vxlan"
   ipam:
     mode: "kubernetes"
 EOF
+fi
 
+COREDNS_IPV4="198.19.255.254"
+COREDNS_IPV6='- "fdc6::ffff"'
+if [ "${CLUSTER_TYPE}" = "eks" ]; then
+  COREDNS_IPV4="10.200.255.254"
+  COREDNS_IPV6=""
+fi
 cat > "${CURRENT}/_values/coredns.yaml" <<EOF
 coredns:
   service:
-    clusterIP: "198.19.255.254"
+    clusterIP: "${COREDNS_IPV4}"
     clusterIPs:
-      - "198.19.255.254"
-      - "fdc6::ffff"
+      - "${COREDNS_IPV4}"
+      ${COREDNS_IPV6}
     ipFamilyPolicy: "${IP_FAMILY_POLICY}"
     ipFamilies:
       ${IP_FAMILIES_IPV4}
@@ -130,12 +205,45 @@ coredns:
 #       mountPath: /etc/resolv.conf
 #       readOnly: true
 EOF
+if [ "${CLUSTER_TYPE}" = "eks" ]; then
+  cat >> "${CURRENT}/_values/coredns.yaml" <<EOF
+  # override just the "forward" plugin
+  servers:
+    - zones:
+        - zone: .
+          use_tcp: true
+      port: 53
+      plugins:
+        - name: errors
+        - name: health
+          configBlock: |-
+            lameduck 10s
+        - name: ready
+        - name: kubernetes
+          parameters: cluster.local in-addr.arpa ip6.arpa
+          configBlock: |-
+            pods insecure
+            fallthrough in-addr.arpa ip6.arpa
+            ttl 30
+        - name: autopath
+          parameters: "@kubernetes"
+        - name: prometheus
+          parameters: 0.0.0.0:9153
+        - name: forward
+          parameters: . 169.254.169.254
+        - name: cache
+          parameters: 30
+        - name: loop
+        - name: reload
+        - name: loadbalance
+EOF
+fi
 
 cat > "${CURRENT}/_values/csi-aws-ebs.yaml" <<EOF
 # aws-ebs-csi-driver:
 #   controller:
 #     podAnnotations:
-#       iam.amazonaws.com/role: "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/nadrama-YOUR_CLUSTER_SLUG-ebs-csi"
+#       iam.amazonaws.com/role: "arn:aws:iam::<YOUR_AWS_ACCOUNT_ID>:role/nadrama-<YOUR_CLUSTER_SLUG>-ebs-csi"
 EOF
 
 cat > "${CURRENT}/_values/cert-manager.yaml" <<EOF
