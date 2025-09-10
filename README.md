@@ -64,7 +64,7 @@ Setup a `values.yaml` file per app, stored under `_values`:
 
 - If deploying on EKS, specify the extra type flag i.e. `./setup.sh -t eks -d <ingress-hostname>`
 
-- Note that you may wish to store this in your own Git repo, if so, just symlink it to `_values`.
+- Note that you may wish to store this in your own Git repo, if so, just symlink it to `_values` or use the `VALUES_DIR` env var when running `render.sh` and `install.sh`.
 
 - Each of these files will be embedded into the corresponding ArgoCD application so changes are not overwritten during any ArgoCD syncs.
 

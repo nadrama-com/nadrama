@@ -8,6 +8,7 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # Check dependencies
 source "${CURRENT}/scripts/deps.sh"
 check_deps
+setup_values_dir
 check_setup
 
 # Ensure webhooks are disabled then restored on script error/cancellation
@@ -34,8 +35,8 @@ if [[ -n "${1}" && ! "${1}" =~ ^-- ]]; then
     chart_name="${1}"
     shift
     echo "Installing specific chart: ${chart_name}"
-    helmfile --skip-refresh --args "--skip-crds" -l "chart=${chart_name}" "$@" sync
+    cd "${CURRENT}" && helmfile --skip-refresh --args "--skip-crds" -l "chart=${chart_name}" "$@" sync
 else
     echo "Installing all charts with helmfile..."
-    helmfile --skip-refresh --args "--skip-crds" "$@" sync
+    cd "${CURRENT}" && helmfile --skip-refresh --args "--skip-crds" "$@" sync
 fi

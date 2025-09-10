@@ -8,13 +8,8 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # Check dependencies
 source "${CURRENT}/scripts/deps.sh"
 check_deps gcsplit
+setup_values_dir
 check_setup
-
-# Check setup was run
-if [ ! -d "${CURRENT}/_values" ]; then
-    echo "Error: _values directory not found. Please run setup.sh first. Exiting..."
-    exit 1
-fi
 
 RENDERED_DIR="${CURRENT}/_rendered"
 
@@ -30,10 +25,10 @@ HELMFILE_FLAGS="--skip-deps --skip-tests --skip-needs --no-hooks"
 # Render specific chart if provided
 if [[ -n "${1}" ]]; then
     echo "Rendering specific chart: ${1}"
-    helmfile --args "--skip-crds" -l "chart=${1}" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+    cd "${CURRENT}" && helmfile --args "--skip-crds" -l "chart=${1}" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
 else
     echo "Rendering all charts with helmfile..."
-    helmfile --args "--skip-crds" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
+    cd "${CURRENT}" && helmfile --args "--skip-crds" template ${HELMFILE_FLAGS} --output-dir="${RENDERED_DIR}"
 fi
 exit 0
 # Split any multi-document YAML files into individual files

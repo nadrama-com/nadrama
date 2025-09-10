@@ -1,3 +1,5 @@
+{{- $valuesDir := env "VALUES_DIR" | default "_values" }}
+
 repositories:
   - name: argo
     url: https://argoproj.github.io/argo-helm
@@ -22,9 +24,11 @@ helmDefaults:
   createNamespace: false
 
 values:
-  - _values/platform.yaml
+  - {{ $valuesDir }}/platform.yaml
 
 ---
+
+{{- $valuesDir := env "VALUES_DIR" | default "_values" }}
 
 {{- $crdCharts := list
   "cilium-crds"
@@ -123,7 +127,7 @@ releases:
       type: app
       tier: infrastructure
     values:
-      - _values/namespaces.yaml
+      - {{ $valuesDir }}/namespaces.yaml
 
   - name: system-rbac
     chart: ./apps/rbac
@@ -135,7 +139,7 @@ releases:
       type: app
       tier: infrastructure
     values:
-      - _values/rbac.yaml
+      - {{ $valuesDir }}/rbac.yaml
 
   - name: system-cilium
     chart: ./apps/cilium
@@ -147,7 +151,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/cilium.yaml
+      - {{ $valuesDir }}/cilium.yaml
 
   - name: system-coredns
     chart: ./apps/coredns
@@ -159,7 +163,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/coredns.yaml
+      - {{ $valuesDir }}/coredns.yaml
 
   - name: system-snapshot
     chart: ./apps/snapshot
@@ -171,7 +175,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/snapshot.yaml
+      - {{ $valuesDir }}/snapshot.yaml
 
   - name: system-csi-aws-ebs
     chart: ./apps/csi-aws-ebs
@@ -184,7 +188,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/csi-aws-ebs.yaml
+      - {{ $valuesDir }}/csi-aws-ebs.yaml
 
   - name: system-cert-manager
     chart: ./apps/cert-manager
@@ -196,7 +200,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/cert-manager.yaml
+      - {{ $valuesDir }}/cert-manager.yaml
 
   - name: system-trust-manager
     chart: ./apps/trust-manager
@@ -211,7 +215,7 @@ releases:
     hooks:
 {{- include "trust-manager.patches" . | nindent 6 }}
     values:
-      - _values/trust-manager.yaml
+      - {{ $valuesDir }}/trust-manager.yaml
 
   - name: system-traefik
     chart: ./apps/traefik
@@ -228,7 +232,7 @@ releases:
     hooks:
 {{- include "cert-manager.patches" . | nindent 6 }}
     values:
-      - _values/traefik.yaml
+      - {{ $valuesDir }}/traefik.yaml
 
   - name: system-trust-bundles
     chart: ./apps/trust-bundles
@@ -243,7 +247,7 @@ releases:
     hooks:
 {{- include "trust-manager.patches" . | nindent 6 }}
     values:
-      - _values/trust-bundles.yaml
+      - {{ $valuesDir }}/trust-bundles.yaml
 
   - name: system-sealed-secrets
     chart: ./apps/sealed-secrets
@@ -255,7 +259,7 @@ releases:
     labels:
       type: app
     values:
-      - _values/sealed-secrets.yaml
+      - {{ $valuesDir }}/sealed-secrets.yaml
 
   - name: system-argocd
     chart: ./apps/argocd
@@ -273,7 +277,7 @@ releases:
         showlogs: true
         command: "./apps/argocd/pre-install.sh"
     values:
-      - _values/argocd.yaml
+      - {{ $valuesDir }}/argocd.yaml
 
   - name: system-nadrama-paas
     chart: ./apps/nadrama-paas
@@ -290,7 +294,7 @@ releases:
         showlogs: true
         command: "./apps/nadrama-paas/pre-install.sh"
     values:
-      - _values/nadrama-paas.yaml
+      - {{ $valuesDir }}/nadrama-paas.yaml
 
   - name: system-platform
     chart: ./apps/platform
@@ -305,11 +309,11 @@ releases:
 {{- range $name, $app := .Values.platform.system.apps }}
 {{- if $app.enabled }}
       - name: "valuesObjects.{{ $name }}"
-        file: "_values/{{ $name }}.yaml"
+        file: "{{ $valuesDir }}/{{ $name }}.yaml"
 {{- end }}
 {{- end }}
     values:
-      - _values/platform.yaml
+      - {{ $valuesDir }}/platform.yaml
 
   - name: webapp
     chart: ./templates/webapp
