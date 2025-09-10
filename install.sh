@@ -8,12 +8,7 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # Check dependencies
 source "${CURRENT}/scripts/deps.sh"
 check_deps
-
-# Check setup was run
-if [ ! -d "${CURRENT}/_values" ]; then
-    echo "Error: _values directory not found. Please run setup.sh first. Exiting..."
-    exit 1
-fi
+check_setup
 
 # Ensure webhooks are disabled then restored on script error/cancellation
 patch_webhooks() {

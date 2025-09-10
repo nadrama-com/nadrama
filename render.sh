@@ -8,6 +8,7 @@ CURRENT=$(dirname "$(readlink -f "$0")")
 # Check dependencies
 source "${CURRENT}/scripts/deps.sh"
 check_deps gcsplit
+check_setup
 
 # Check setup was run
 if [ ! -d "${CURRENT}/_values" ]; then

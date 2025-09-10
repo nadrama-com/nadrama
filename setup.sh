@@ -85,6 +85,13 @@ fi
 
 cat > "${CURRENT}/_values/platform.yaml" <<EOF
 platform:
+  cluster:
+    type: "${CLUSTER_TYPE}"
+    networking:
+      ipFamilyPolicy: "${IP_FAMILY_POLICY}"
+      ipFamilies:
+        ${IP_FAMILIES_IPV4}
+        ${IP_FAMILIES_IPV6}
   system:
     # CRDs
     crds:

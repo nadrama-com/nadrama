@@ -81,8 +81,15 @@ hooks:
     args:
       - "-c"
       - |
+        {{ if eq .Values.platform.cluster.type "nadrama" }}
         # Patch kubernetes service for dual-stack networking
         kubectl patch service kubernetes -n default --type='merge' -p='{"spec":{"ipFamilyPolicy":"PreferDualStack","ipFamilies":["IPv4","IPv6"],"clusterIPs":["198.18.0.1","fdc6::1"]}}'
+        {{ else if eq .Values.platform.cluster.type "eks" }}
+        # Disable aws-node daemonset
+        kubectl --context=platform-production-eks patch daemonset aws-node -n kube-system -p '{"spec":{"template":{"spec":{"nodeSelector":{"platform.nadrama.com/allow-eks-aws-node":"true"}}}}}'
+        # Disable kube-proxy daemonset
+        kubectl --context=platform-production-eks patch daemonset kube-proxy -n kube-system -p '{"spec":{"template":{"spec":{"nodeSelector":{"platform.nadrama.com/allow-eks-kube-proxy":"true"}}}}}'
+        {{ end }}
         # Label and annotate default namespace for Helm management
         kubectl label namespace default app.kubernetes.io/managed-by=Helm --overwrite
         kubectl annotate namespace default meta.helm.sh/release-name=system-namespaces meta.helm.sh/release-namespace=system-cluster --overwrite
